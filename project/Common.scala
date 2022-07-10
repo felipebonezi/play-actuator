@@ -19,7 +19,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import Dependencies.ScalaVersions._
-
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import sbt.Keys._
 import sbt._
@@ -29,7 +28,7 @@ object Common extends AutoPlugin {
 
   import HeaderPlugin.autoImport._
 
-  override def trigger = allRequirements
+  override def trigger: PluginTrigger = allRequirements
 
   override def requires: Plugins = JvmPlugin && HeaderPlugin
 
@@ -37,6 +36,8 @@ object Common extends AutoPlugin {
 
   override def globalSettings: Seq[Setting[_]] =
     Seq(
+      // project
+      description := "A Play! Framework dependency to include actuators methods to your service.",
       // organization
       organization         := "io.github.felipebonezi",
       organizationName     := "Felipe Bonezi",
@@ -46,7 +47,10 @@ object Common extends AutoPlugin {
       scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-encoding", "utf8"),
       javacOptions ++= Seq("-encoding", "UTF-8"),
       // legal
-      licenses := Seq("MIT" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+      licenses := Seq(
+        "MIT" ->
+          url("https://github.com/felipebonezi/play-actuator/blob/main/LICENSE")
+      ),
       // on the web
       homepage := Some(url(s"https://github.com/felipebonezi/$repoName")),
       scmInfo := Some(
@@ -60,12 +64,16 @@ object Common extends AutoPlugin {
         "Contributors",
         s"https://github.com/felipebonezi/$repoName/graphs/contributors",
         url("https://github.com/felipebonezi")
-      )
+      ),
+      versionScheme     := Some("early-semver"),
+      publishMavenStyle := true,
+      credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
     )
 
   override def projectSettings: Seq[Def.Setting[_]] =
     Seq(
       headerEmptyLine := false,
-      headerLicense   := Some(HeaderLicense.MIT("2022", "Felipe Bonezi <https://about.me/felipebonezi>"))
+      headerLicense :=
+        Some(HeaderLicense.MIT("2022", "Felipe Bonezi <https://about.me/felipebonezi>"))
     )
 }
