@@ -76,7 +76,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GPG_KEY_FILE: ${{ secrets.GPG_KEY_FILE }}
-      SBT_CREDENTIALS: ${{ secrets.SBT_CREDENTIALS }}
       SONATYPE_CREDENTIALS: ${{ secrets.SONATYPE_CREDENTIALS }}
     steps:
       - uses: actions/checkout@v3
@@ -92,14 +91,13 @@ jobs:
         run: |
           mkdir ~/.sbt/gpg
           
-          echo $GPG_KEY_FILE | base64 --decode > secring.gpg
-          mv secring.gpg ~/.sbt/gpg/
-          
-          echo $SBT_CREDENTIALS | base64 --decode > .credentials
-          mv .credentials ~/.sbt/
+          echo $GPG_KEY_FILE | base64 --decode > secring
+          mv secring ~/.sbt/gpg/secring
+          ls -la ~/.sbt/gpg
           
           echo $SONATYPE_CREDENTIALS | base64 --decode > sonatype.sbt
-          mv sonatype.sbt ~/.sbt/
+          mv sonatype.sbt ~/.sbt/sonatype.sbt
+          ls -la ~/.sbt
           
           echo 'Setup credentials successfuly!'
 

@@ -65,9 +65,7 @@ object Common extends AutoPlugin {
         s"https://github.com/felipebonezi/$repoName/graphs/contributors",
         url("https://github.com/felipebonezi")
       ),
-      versionScheme     := Some("early-semver"),
-      publishMavenStyle := true,
-      credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
+      versionScheme := Some("early-semver"),
     )
 
   override def projectSettings: Seq[Def.Setting[_]] =
