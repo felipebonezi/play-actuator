@@ -92,12 +92,11 @@ jobs:
           mkdir ~/.sbt/gpg
           
           echo $GPG_KEY_FILE | base64 --decode > secring
+          gpg --import secring
           mv secring ~/.sbt/gpg/secring
-          ls -la ~/.sbt/gpg
           
           echo $SONATYPE_CREDENTIALS | base64 --decode > sonatype.sbt
           mv sonatype.sbt ~/.sbt/sonatype.sbt
-          ls -la ~/.sbt
           
           echo 'Setup credentials successfuly!'
 
