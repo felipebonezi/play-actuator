@@ -32,10 +32,12 @@ lazy val root = project
 lazy val core = project
   .in(file("play-actuator"))
   .settings(
-    name               := "play-actuator",
-    organization       := "io.github.felipebonezi",
-    version            := "0.1.0",
-    crossScalaVersions := Seq(scala212, scala213),
+    name                               := "play-actuator",
+    organization                       := "io.github.felipebonezi",
+    version                            := "0.1.0",
+    crossScalaVersions                 := Seq(scala212, scala213),
+    publishTo                          := sonatypePublishToBundle.value,
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     Dependencies.actuator,
   )
 

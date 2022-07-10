@@ -49,7 +49,7 @@ jobs:
         distribution: [ 'corretto' ]
         jdk: [ '8', '11' ]
         scala: [ '2.12.16', '2.13.8' ]
-        experimental: [false]
+        experimental: [ false ]
         include:
           - jdk: '17'
             distribution: 'corretto'
@@ -71,9 +71,13 @@ jobs:
         run: sbt ++${{ matrix.scala }} compile test
 
   publish:
-    name: Publish to Maven Central
+    name: Publish to Sonatype
     if: "github.event.release || github.event.release.prerelease"
     runs-on: ubuntu-latest
+    env:
+      GPG_KEY_FILE: ${{ secrets.GPG_KEY_FILE }}
+      SBT_CREDENTIALS: ${{ secrets.SBT_CREDENTIALS }}
+      SONATYPE_CREDENTIALS: ${{ secrets.SONATYPE_CREDENTIALS }}
     steps:
       - uses: actions/checkout@v3
 
@@ -84,5 +88,20 @@ jobs:
           java-version: '8'
           cache: 'sbt'
 
+      - name: Configure credentials
+        run: |
+          mkdir ~/.sbt/gpg
+          
+          echo $GPG_KEY_FILE | base64 --decode > secring.gpg
+          mv secring.gpg ~/.sbt/gpg/
+          
+          echo $SBT_CREDENTIALS | base64 --decode > .credentials
+          mv .credentials ~/.sbt/
+          
+          echo $SONATYPE_CREDENTIALS | base64 --decode > sonatype.sbt
+          mv sonatype.sbt ~/.sbt/
+          
+          echo 'Setup credentials successfuly!'
+
       - name: Publish package
-        run: sbt +publish
+        run: sbt +publishSigned sonatypeBundleRelease
