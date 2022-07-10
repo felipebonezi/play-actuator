@@ -34,10 +34,10 @@ lazy val core = project
   .settings(
     name                               := "play-actuator",
     organization                       := "io.github.felipebonezi",
-    version                            := "0.1.0",
     crossScalaVersions                 := Seq(scala212, scala213),
-    publishTo                          := sonatypePublishToBundle.value,
+    versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
     Dependencies.actuator,
   )
 

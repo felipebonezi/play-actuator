@@ -74,10 +74,6 @@ jobs:
     name: Publish to Sonatype
     if: "github.event.release || github.event.release.prerelease"
     runs-on: ubuntu-latest
-    env:
-      GPG_KEY_FILE: ${{ secrets.GPG_KEY_FILE }}
-      GPG_SBT: ${{ secrets.GPG_SBT }}
-      SONATYPE_CREDENTIALS: ${{ secrets.SONATYPE_CREDENTIALS }}
     steps:
       - uses: actions/checkout@v3
 
@@ -88,24 +84,10 @@ jobs:
           java-version: '8'
           cache: 'sbt'
 
-      - name: Configure credentials
-        run: |
-          mkdir ~/.sbt/gpg
-          
-          echo $GPG_PUB_KEY_FILE | base64 --decode > public.key
-          gpg --import public.key
-          gpg --list-secret-keys
-          
-          echo $GPG_KEY_FILE | base64 --decode > secring
-          mv secring ~/.sbt/gpg/secring
-          
-          echo $SONATYPE_CREDENTIALS | base64 --decode > sonatype.sbt
-          mv sonatype.sbt ~/.sbt/sonatype.sbt
-          
-          echo $GPG_SBT | base64 --decode > gpg.sbt
-          mv gpg.sbt ~/.sbt/gpg.sbt
-          
-          echo 'Setup credentials successfuly!'
-
       - name: Publish package
-        run: sbt +publishSigned sonatypeBundleRelease
+        run: sbt ci-release
+        env:
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}

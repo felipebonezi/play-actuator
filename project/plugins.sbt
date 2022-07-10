@@ -18,9 +18,8 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.7.0")
-addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype" % "3.9.13")
-addSbtPlugin("com.github.sbt"    % "sbt-pgp"      % "2.1.2")
+addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.7.0")
+addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.10")
 
 // Code formatter for Scala.
 // See more: https://github.com/scalameta/sbt-scalafmt
