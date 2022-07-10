@@ -28,5 +28,6 @@ addCommandAlias(
     "headerCheckAll",
     "scalafmtSbtCheck",
     "scalafmtCheckAll",
+    "scalastyle",
   ).mkString(";")
 )

@@ -1,0 +1,11 @@
+# Labels list.
+# ~~~~
+"type:feature": [ 'feature/*', 'feat/*' ]
+"type:bug": [ 'bug/*', 'bugfix/*', 'fix/*' ]
+"type:hotfix": [ 'hotfix/*', 'hot/*' ]
+"type:breaking-change": [ 'break/*', 'breaking-change/*' ]
+"type:docs": [ 'docs/*', 'doc/*', 'documentation/*' ]
+"type:enhancement": [ 'enhancement/*', 'enhance/*', 'chore/*', 'improve/*', 'improvement/*' ]
+"type:maintenance": [ 'maintenance/*', 'robot/*', 'devops/*' ]
+"type:dependency": [ 'update/*', 'renovate/*', 'deps/*' ]
+"type:security": [ 'security/*' ]
