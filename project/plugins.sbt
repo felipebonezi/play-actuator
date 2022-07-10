@@ -18,5 +18,15 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.7.0")
-addSbtPlugin("org.scalameta"     % "sbt-scalafmt" % "2.4.6")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.7.0")
+
+// Code formatter for Scala.
+// See more: https://github.com/scalameta/sbt-scalafmt
+// Oficial Website: https://scalameta.org/scalafmt/
+addSbtPlugin("org.scalameta"   % "sbt-scalafmt"          % "2.4.6")
+addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
+
+// Test Coverage plugin.
+// sbt-scoverage is a plugin for SBT that integrates the scoverage code coverage library.
+// See more: https://github.com/scoverage/sbt-scoverage
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.3")
