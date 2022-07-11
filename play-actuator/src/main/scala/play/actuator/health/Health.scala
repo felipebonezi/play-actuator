@@ -18,42 +18,32 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
-
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.BaseController
-import play.api.mvc.ControllerComponents
-import play.actuator.ActuatorEnum.Down
+package play.actuator.health
 import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
-import play.actuator.health.HealthService
-import play.api.libs.json.Json.toJson
+import play.api.libs.json.Format
+import play.api.libs.json.JsNull
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+case class Health(status: Status, details: Map[String, Any]) {
+  override def toString: String = s"Health(status=$status, details=$details)"
+}
 
-class ActuatorController @Inject() (healthService: HealthService, cc: ControllerComponents)(implicit
-    ec: ExecutionContext
-) extends BaseController {
-
-  def health: Action[AnyContent] = Action {
-    val indicators = this.healthService.getIndicators
-    if (indicators.nonEmpty) {
-      val status = if (indicators.exists(indicator => indicator.status == Down.toString)) {
-        Down
-      } else {
-        Up
-      }
-      Ok(Json.obj("status" -> status, "indicators" -> toJson(indicators)))
-    } else {
-      Ok(Json.obj("status" -> this.healthService.globalStatus))
-    }
-  }
-
-  def info: Action[AnyContent] = TODO
-
-  protected override def controllerComponents: ControllerComponents = this.cc
-
+object Health {
+  implicit val writes: Writes[Health] =
+    (o: Health) =>
+      Json.obj(
+        "status" -> o.status,
+        "details" -> Json.toJson(o.details.map { case (key, value) =>
+          key -> (value match {
+            case x: String => JsString(x)
+            case x: Int    => JsNumber(x)
+            case x: Long   => JsNumber(x)
+            case _         => JsNull
+          })
+        })
+      )
 }
