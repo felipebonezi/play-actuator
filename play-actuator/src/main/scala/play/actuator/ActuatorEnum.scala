@@ -20,40 +20,8 @@
  */
 package play.actuator
 
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.BaseController
-import play.api.mvc.ControllerComponents
-import play.actuator.ActuatorEnum.Down
-import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
-import play.actuator.health.HealthService
-import play.api.libs.json.Json.toJson
+object ActuatorEnum extends Enumeration {
+  type Status = Value
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-
-class ActuatorController @Inject() (healthService: HealthService, cc: ControllerComponents)(implicit
-    ec: ExecutionContext
-) extends BaseController {
-
-  def health: Action[AnyContent] = Action {
-    val indicators = this.healthService.getIndicators
-    if (indicators.nonEmpty) {
-      val status = if (indicators.exists(indicator => indicator.status == Down.toString)) {
-        Down
-      } else {
-        Up
-      }
-      Ok(Json.obj("status" -> status, "indicators" -> toJson(indicators)))
-    } else {
-      Ok(Json.obj("status" -> this.healthService.globalStatus))
-    }
-  }
-
-  def info: Action[AnyContent] = TODO
-
-  protected override def controllerComponents: ControllerComponents = this.cc
-
+  val Up, Down = Value
 }

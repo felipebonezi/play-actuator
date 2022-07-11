@@ -8,16 +8,9 @@
 
 Play! Framework plugin with actuator actions about your application.
 
-This project is inspired by `Spring Boot Actuator` architecture 
-([Check this post to know more about it](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator)).
-
-## Actuator endpoints
-
-| Endpoint ID | Description | Path | Ready to use |
-|-------------|--------|-------------|------|
-| health | Displays your application’s health status. | `/actuator/health` | ✔️ |
-| info | Displays information about your application. | `/actuator/info` | ✖️ |
-| logfile | Returns the contents of the log file. | `/actuator/logfile` | ✖️ |
+This project is inspired by `Spring Boot Actuator` architecture
+([Check this post to know more about it](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator))
+.
 
 ## How to use?
 
@@ -34,3 +27,19 @@ After that, you need to configure `play.actuator.ActuatorRouter` into project `c
 ```
 
 Run your project and check Actuators endpoints - e.g. `/actuator/health`.
+
+## Actuator endpoints
+
+| Endpoint ID | Description                                  | Path                | Ready to use |
+|-------------|----------------------------------------------|---------------------|--------------|
+| health      | Displays your application’s health status.   | `/actuator/health`  | ✔️           |
+| info        | Displays information about your application. | `/actuator/info`    | ✖️           |
+| logfile     | Returns the contents of the log file.        | `/actuator/logfile` | ✖️           |
+
+## Health endpoint details
+
+You can check all health indicators by simple activating each configuration.
+
+### Disk Space Indicator
+
+`play.actuator.health.indicators.diskSpace = true`

@@ -18,42 +18,33 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.health.indicator
 
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.BaseController
-import play.api.mvc.ControllerComponents
 import play.actuator.ActuatorEnum.Down
 import play.actuator.ActuatorEnum.Status
 import play.actuator.ActuatorEnum.Up
-import play.actuator.health.HealthService
-import play.api.libs.json.Json.toJson
+import play.actuator.health.HealthBuilder
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import java.io.File
 
-class ActuatorController @Inject() (healthService: HealthService, cc: ControllerComponents)(implicit
-    ec: ExecutionContext
-) extends BaseController {
+class DiskSpaceIndicatorBase extends BaseHealthIndicator {
 
-  def health: Action[AnyContent] = Action {
-    val indicators = this.healthService.getIndicators
-    if (indicators.nonEmpty) {
-      val status = if (indicators.exists(indicator => indicator.status == Down.toString)) {
-        Down
-      } else {
-        Up
-      }
-      Ok(Json.obj("status" -> status, "indicators" -> toJson(indicators)))
+  private val folder = new File("/")
+
+  private val status: Status = {
+    val usableSpace = folder.getUsableSpace
+    if (usableSpace > 0) {
+      Up
     } else {
-      Ok(Json.obj("status" -> this.healthService.globalStatus))
+      Down
     }
   }
 
-  def info: Action[AnyContent] = TODO
-
-  protected override def controllerComponents: ControllerComponents = this.cc
+  override def info(builder: HealthBuilder): Unit =
+    builder
+      .withStatus(this.status)
+      .withDetail("total", folder.getTotalSpace)
+      .withDetail("free", folder.getFreeSpace)
+      .withDetail("usable", folder.getUsableSpace)
 
 }
