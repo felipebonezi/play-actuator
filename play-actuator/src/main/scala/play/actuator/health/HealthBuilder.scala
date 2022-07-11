@@ -24,9 +24,9 @@ import play.actuator.ActuatorEnum.Up
 
 import scala.collection.mutable
 
-class HealthBuilder() {
-  var status: Status                    = Up
-  var details: mutable.Map[String, Any] = mutable.Map()
+class HealthBuilder(val name: String) {
+  private var status: Status                    = Up
+  private val details: mutable.Map[String, Any] = mutable.Map()
 
   def withStatus(status: Status): HealthBuilder = {
     this.status = status
@@ -39,7 +39,7 @@ class HealthBuilder() {
   }
 
   def build: Health = {
-    new Health(this.status, this.details.toMap)
+    new Health(this.name, this.status, this.details.toMap)
   }
 
 }

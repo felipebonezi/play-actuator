@@ -28,7 +28,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
-case class Health(status: Status, details: Map[String, Any]) {
+case class Health(name: String, status: Status, details: Map[String, Any]) {
   override def toString: String = s"Health(status=$status, details=$details)"
 }
 
@@ -36,14 +36,16 @@ object Health {
   implicit val writes: Writes[Health] =
     (o: Health) =>
       Json.obj(
-        "status" -> o.status,
-        "details" -> Json.toJson(o.details.map { case (key, value) =>
-          key -> (value match {
-            case x: String => JsString(x)
-            case x: Int    => JsNumber(x)
-            case x: Long   => JsNumber(x)
-            case _         => JsNull
+        o.name -> Json.obj(
+          "status" -> o.status,
+          "details" -> Json.toJson(o.details.map { case (key, value) =>
+            key -> (value match {
+              case x: String => JsString(x)
+              case x: Int    => JsNumber(x)
+              case x: Long   => JsNumber(x)
+              case _         => JsNull
+            })
           })
-        })
+        )
       )
 }

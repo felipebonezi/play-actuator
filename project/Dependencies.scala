@@ -37,8 +37,9 @@ object Dependencies {
   }
 
   val actuator = libraryDependencies ++= Seq(
-    "com.typesafe.play" %% "play-json"  % Versions.playJson,
+    "com.typesafe.play" %% "play-jdbc"  % Versions.play,
     "com.typesafe.play" %% "play-guice" % Versions.play,
+    "com.typesafe.play" %% "play-json"  % Versions.playJson,
     "com.typesafe.play" %% "play-test"  % Versions.play % Test,
   )
 
