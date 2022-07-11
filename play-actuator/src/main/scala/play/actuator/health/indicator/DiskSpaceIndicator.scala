@@ -27,7 +27,7 @@ import play.actuator.health.HealthBuilder
 
 import java.io.File
 
-class DiskSpaceIndicatorBase extends BaseHealthIndicator {
+class DiskSpaceIndicator extends BaseHealthIndicator {
 
   private val folder = new File("/")
 
