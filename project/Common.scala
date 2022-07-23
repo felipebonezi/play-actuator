@@ -18,7 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import Dependencies.ScalaVersions._
+import Dependencies.scala212
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import sbt.Keys._
 import sbt._
@@ -37,6 +37,7 @@ object Common extends AutoPlugin {
   override def globalSettings: Seq[Setting[_]] =
     Seq(
       // project
+      name        := repoName,
       description := "A Play! Framework dependency to include actuators methods to your service.",
       // organization
       organization         := "io.github.felipebonezi",

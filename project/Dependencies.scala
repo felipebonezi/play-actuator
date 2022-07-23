@@ -19,33 +19,27 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import sbt.Keys.libraryDependencies
-
 import sbt._
 
 object Dependencies {
 
-  object ScalaVersions {
-    val scala212 = "2.12.16"
-    val scala213 = "2.13.8"
-  }
+  val scala212 = "2.12.16"
+  val scala213 = "2.13.8"
 
-  object Versions {
-    val play: String           = "2.8.16"
-    val playJson: String       = "2.9.2"
-    val typesafeConfig: String = "1.4.2"
-    val scripted: String       = "1.6.2"
-  }
+  val playVersion: String           = "2.8.16"
+  val playJsonVersion: String       = "2.9.2"
+  val typesafeConfigVersion: String = "1.4.2"
 
   val actuator = libraryDependencies ++= Seq(
-    "com.typesafe.play" %% "play-jdbc"  % Versions.play,
-    "com.typesafe.play" %% "play-guice" % Versions.play,
-    "com.typesafe.play" %% "play-json"  % Versions.playJson,
-    "com.typesafe.play" %% "play-test"  % Versions.play % Test,
+    "com.typesafe.play" %% "play-jdbc"  % playVersion,
+    "com.typesafe.play" %% "play-guice" % playVersion,
+    "com.typesafe.play" %% "play-json"  % playJsonVersion,
+    "com.typesafe.play" %% "play-test"  % playVersion % Test,
   )
 
   val plugin = libraryDependencies ++= Seq(
-    "com.typesafe"       % "config"     % Versions.typesafeConfig,
-    "com.typesafe.play" %% "play-guice" % Versions.play,
-    "com.typesafe.play" %% "play-test"  % Versions.play % Test
+    "com.typesafe.play" %% "play-guice" % playVersion,
+    "com.typesafe.play" %% "play-test"  % playVersion % Test,
+    "com.typesafe"       % "config"     % typesafeConfigVersion,
   )
 }

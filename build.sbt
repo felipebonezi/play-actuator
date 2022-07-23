@@ -18,7 +18,8 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import Dependencies.ScalaVersions._
+import Dependencies.scala212
+import Dependencies.scala213
 
 lazy val root = project
   .in(file("."))
@@ -31,9 +32,8 @@ lazy val root = project
 
 lazy val core = project
   .in(file("play-actuator"))
+  .enablePlugins(Common)
   .settings(
-    name                               := "play-actuator",
-    organization                       := "io.github.felipebonezi",
     crossScalaVersions                 := Seq(scala212, scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
@@ -47,6 +47,8 @@ addCommandAlias(
     "headerCheckAll",
     "scalafmtSbtCheck",
     "scalafmtCheckAll",
+    "test:scalafmtCheckAll",
     "scalastyle",
+    "test:scalastyle",
   ).mkString(";")
 )
