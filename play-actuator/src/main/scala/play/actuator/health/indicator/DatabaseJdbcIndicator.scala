@@ -21,13 +21,13 @@
 package play.actuator.health.indicator
 import play.actuator.ActuatorEnum
 import play.actuator.health.HealthBuilder
-import play.actuator.health.indicator.JdbcIndicator.DB_TIMEOUT_SECS
+import play.actuator.health.indicator.DatabaseJdbcIndicator.DB_TIMEOUT_SECS
 import play.api.db.Database
 
 import java.sql.Connection
 import javax.inject.Inject
 
-class JdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
+class DatabaseJdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
 
   private var connectionRef: Option[Connection] = None
 
@@ -72,6 +72,6 @@ class JdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
 
 }
 
-object JdbcIndicator {
+object DatabaseJdbcIndicator {
   private val DB_TIMEOUT_SECS = 5000
 }

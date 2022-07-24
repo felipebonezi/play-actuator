@@ -20,10 +20,12 @@
  */
 package play.actuator
 import com.google.inject.AbstractModule
+import com.google.inject.name.Names
 import play.actuator.ActuatorEnum.Up
 import play.actuator.health.HealthBuilder
 import play.actuator.health.indicator.DatabaseIndicator
-import play.actuator.health.indicator.JdbcIndicator
+import play.actuator.health.indicator.DatabaseJdbcIndicator
+import play.actuator.health.indicator.DatabaseSlickIndicator
 import play.actuator.health.indicator.PlayRedisIndicator
 import play.actuator.health.indicator.RedisIndicator
 import play.api.Configuration
@@ -33,13 +35,30 @@ class ActuatorModule(environment: Environment, config: Configuration) extends Ab
 
   override def configure(): Unit = {
     if (config.has("db")) {
-      bind(classOf[DatabaseIndicator]).to(classOf[JdbcIndicator])
+      bind(classOf[DatabaseIndicator])
+        .annotatedWith(Names.named("jdbcIndicator"))
+        .to(classOf[DatabaseJdbcIndicator])
     } else {
-      bind(classOf[DatabaseIndicator]).toInstance((builder: HealthBuilder) => {
-        builder
-          .withStatus(Up)
-          .withDetail("message", "Application without database connection.")
-      })
+      bind(classOf[DatabaseIndicator])
+        .annotatedWith(Names.named("jdbcIndicator"))
+        .toInstance((builder: HealthBuilder) => {
+          builder
+            .withStatus(Up)
+            .withDetail("message", "Application without database connection.")
+        })
+    }
+    if (config.has("slick")) {
+      bind(classOf[DatabaseIndicator])
+        .annotatedWith(Names.named("slickIndicator"))
+        .to(classOf[DatabaseSlickIndicator])
+    } else {
+      bind(classOf[DatabaseIndicator])
+        .annotatedWith(Names.named("slickIndicator"))
+        .toInstance((builder: HealthBuilder) => {
+          builder
+            .withStatus(Up)
+            .withDetail("message", "Application without Slick connection.")
+        })
     }
     if (config.has("play.cache.redis")) {
       bind(classOf[RedisIndicator]).to(classOf[PlayRedisIndicator])

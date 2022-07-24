@@ -18,7 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import Dependencies.scala212
+import Dependencies.scala213
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import sbt.Keys._
 import sbt._
@@ -43,7 +43,7 @@ object Common extends AutoPlugin {
       organizationName     := "Felipe Bonezi",
       organizationHomepage := Some(url("https://about.me/felipebonezi")),
       // scala settings
-      scalaVersion := scala212,
+      scalaVersion := scala213,
       scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-encoding", "utf8"),
       javacOptions ++= Seq("-encoding", "UTF-8"),
       // legal
