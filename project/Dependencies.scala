@@ -28,13 +28,15 @@ object Dependencies {
 
   val playVersion: String           = "2.8.16"
   val playJsonVersion: String       = "2.9.2"
+  val playRedisVersion: String      = "2.7.0"
   val typesafeConfigVersion: String = "1.4.2"
 
   val actuator = libraryDependencies ++= Seq(
-    "com.typesafe.play" %% "play-jdbc"  % playVersion,
-    "com.typesafe.play" %% "play-guice" % playVersion,
-    "com.typesafe.play" %% "play-json"  % playJsonVersion,
-    "com.typesafe.play" %% "play-test"  % playVersion % Test,
+    "com.typesafe.play"     %% "play-jdbc"  % playVersion,
+    "com.typesafe.play"     %% "play-guice" % playVersion,
+    "com.typesafe.play"     %% "play-json"  % playJsonVersion,
+    "com.typesafe.play"     %% "play-test"  % playVersion % Test,
+    "com.github.karelcemus" %% "play-redis" % playRedisVersion
   )
 
   val plugin = libraryDependencies ++= Seq(

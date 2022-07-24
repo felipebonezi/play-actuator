@@ -26,7 +26,9 @@ import play.actuator.ActuatorEnum.Up
 import play.actuator.health.HealthBuilder
 
 import java.io.File
+import javax.inject.Singleton
 
+@Singleton
 class DiskSpaceIndicator extends BaseHealthIndicator {
 
   private val folder = new File("/")

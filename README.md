@@ -43,3 +43,11 @@ You can check all health indicators by simple activating each configuration.
 ### Disk Space Indicator
 
 `play.actuator.health.indicators.diskSpace = true`
+
+### JDBC Indicator
+
+`play.actuator.health.indicators.jdbc = true`
+
+### Redis Indicator
+
+`play.actuator.health.indicators.redis = true`

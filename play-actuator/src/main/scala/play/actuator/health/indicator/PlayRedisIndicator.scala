@@ -18,27 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-name         := """play-actuator-test"""
-organization := "io.github.felipebonezi"
+package play.actuator.health.indicator
+import com.typesafe.config.Config
+import play.actuator.ActuatorEnum.Down
+import play.actuator.ActuatorEnum.Up
+import play.actuator.health.HealthBuilder
+import play.api.cache.redis.RedisConnector
 
-version := "1.0-SNAPSHOT"
+import javax.inject.Inject
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+class PlayRedisIndicator @Inject() (
+    config: Config,
+    connector: RedisConnector
+) extends RedisIndicator {
 
-scalaVersion := "2.13.8"
+  override def info(builder: HealthBuilder): Unit = {
+    if (this.config.getString("play.cache.redis.recovery") != "log-and-fail") {
+      throw new IllegalArgumentException("You need to use 'log-and-fail' recovery for Redis.")
+    }
 
-resolvers ++= DefaultOptions.resolvers(snapshot = true)
-libraryDependencies += javaJdbc
-libraryDependencies += "org.postgresql" % "postgresql" % "42.4.0"
-libraryDependencies += cacheApi
-libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.7.0"
-libraryDependencies += guice
-libraryDependencies += "io.github.felipebonezi" %% "play-actuator"      % "0.1.0+3-9876626a+20220723-2349-SNAPSHOT"
-libraryDependencies += specs2                    % Test
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
+    try {
+      Await.result(this.connector.ping(), 3.seconds)
+      builder
+        .withStatus(Up)
+        .withDetail("source", this.config.getString("play.cache.redis.source"))
+    } catch {
+      case e: Exception =>
+        builder
+          .withStatus(Down)
+          .withDetail("message", "Redis connection failed!")
+          .withDetail("exception", e.getMessage)
+    }
+  }
 
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "io.github.felipebonezi.controllers._"
-
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "io.github.felipebonezi.binders._"
+}
