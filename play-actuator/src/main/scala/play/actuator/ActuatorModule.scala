@@ -20,9 +20,12 @@
  */
 package play.actuator
 import com.google.inject.AbstractModule
+import play.actuator.ActuatorEnum.Up
 import play.actuator.health.HealthBuilder
 import play.actuator.health.indicator.DatabaseIndicator
 import play.actuator.health.indicator.JdbcIndicator
+import play.actuator.health.indicator.PlayRedisIndicator
+import play.actuator.health.indicator.RedisIndicator
 import play.api.Configuration
 import play.api.Environment
 
@@ -34,8 +37,17 @@ class ActuatorModule(environment: Environment, config: Configuration) extends Ab
     } else {
       bind(classOf[DatabaseIndicator]).toInstance((builder: HealthBuilder) => {
         builder
-          .withStatus(ActuatorEnum.Up)
+          .withStatus(Up)
           .withDetail("message", "Application without database connection.")
+      })
+    }
+    if (config.has("play.cache.redis")) {
+      bind(classOf[RedisIndicator]).to(classOf[PlayRedisIndicator])
+    } else {
+      bind(classOf[RedisIndicator]).toInstance((builder: HealthBuilder) => {
+        builder
+          .withStatus(Up)
+          .withDetail("message", "Application without Redis connection.")
       })
     }
   }

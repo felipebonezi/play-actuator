@@ -3,7 +3,7 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-GET     /                           controllers.HomeController.index
+GET     /                           controllers.HomeController.index()
 
 ->      /actuator                   play.actuator.ActuatorRouter
 

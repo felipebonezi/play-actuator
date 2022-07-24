@@ -37,7 +37,6 @@ object Common extends AutoPlugin {
   override def globalSettings: Seq[Setting[_]] =
     Seq(
       // project
-      name        := repoName,
       description := "A Play! Framework dependency to include actuators methods to your service.",
       // organization
       organization         := "io.github.felipebonezi",
@@ -54,12 +53,6 @@ object Common extends AutoPlugin {
       ),
       // on the web
       homepage := Some(url(s"https://github.com/felipebonezi/$repoName")),
-      scmInfo := Some(
-        ScmInfo(
-          url(s"https://github.com/felipebonezi/$repoName"),
-          s"scm:git:git@github.com:felipebonezi/$repoName.git"
-        )
-      ),
       developers += Developer(
         "contributors",
         "Contributors",

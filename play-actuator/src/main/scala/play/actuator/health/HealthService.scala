@@ -25,6 +25,7 @@ import play.actuator.ActuatorEnum.Status
 import play.actuator.ActuatorEnum.Up
 import play.actuator.health.indicator.DatabaseIndicator
 import play.actuator.health.indicator.DiskSpaceIndicator
+import play.actuator.health.indicator.RedisIndicator
 import play.api.Configuration
 
 import javax.inject.Inject
@@ -32,7 +33,12 @@ import javax.inject.Singleton
 import scala.collection.mutable
 
 @Singleton
-class HealthService @Inject() (config: Configuration, databaseIndicator: DatabaseIndicator) {
+class HealthService @Inject() (
+    config: Configuration,
+    diskSpaceIndicator: DiskSpaceIndicator,
+    databaseIndicator: DatabaseIndicator,
+    redisIndicator: RedisIndicator
+) {
 
   def globalStatus: Status =
     if (getIndicators.exists(h => h.status == Down)) {
@@ -44,15 +50,20 @@ class HealthService @Inject() (config: Configuration, databaseIndicator: Databas
   def getIndicators: Seq[Health] = {
     val indicators = mutable.Buffer[Health]()
     if (isIndicatorActive("diskSpace")) {
-      val builder            = new HealthBuilder("diskSpace")
-      val diskSpaceIndicator = new DiskSpaceIndicator()
-      diskSpaceIndicator.info(builder)
+      val builder = new HealthBuilder("diskSpace")
+      this.diskSpaceIndicator.info(builder)
       indicators.append(builder.build)
     }
 
     if (isIndicatorActive("jdbc")) {
       val builder = new HealthBuilder("jdbc")
       this.databaseIndicator.info(builder)
+      indicators.append(builder.build)
+    }
+
+    if (isIndicatorActive("redis")) {
+      val builder = new HealthBuilder("redis")
+      this.redisIndicator.info(builder)
       indicators.append(builder.build)
     }
 
