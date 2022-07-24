@@ -29,6 +29,7 @@ import play.actuator.health.indicator.RedisIndicator
 import play.api.Configuration
 
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 import scala.collection.mutable
 
@@ -36,7 +37,8 @@ import scala.collection.mutable
 class HealthService @Inject() (
     config: Configuration,
     diskSpaceIndicator: DiskSpaceIndicator,
-    databaseIndicator: DatabaseIndicator,
+    @Named("jdbcIndicator") jdbcIndicator: DatabaseIndicator,
+    @Named("slickIndicator") slickIndicator: DatabaseIndicator,
     redisIndicator: RedisIndicator
 ) {
 
@@ -57,7 +59,13 @@ class HealthService @Inject() (
 
     if (isIndicatorActive("jdbc")) {
       val builder = new HealthBuilder("jdbc")
-      this.databaseIndicator.info(builder)
+      this.jdbcIndicator.info(builder)
+      indicators.append(builder.build)
+    }
+
+    if (isIndicatorActive("slick")) {
+      val builder = new HealthBuilder("slick")
+      this.slickIndicator.info(builder)
       indicators.append(builder.build)
     }
 
