@@ -11,7 +11,7 @@
   "prCreation": "not-pending",
   "additionalBranchPrefix": "deps/",
   "addLabels": [
-    "Type: Dependency"
+    "type:dependency"
   ],
   "rebaseWhen": "conflicted",
   "packageRules": [
