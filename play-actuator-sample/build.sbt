@@ -29,7 +29,7 @@ scalaVersion := "2.13.8"
 
 resolvers ++= DefaultOptions.resolvers(snapshot = true)
 libraryDependencies += javaJdbc
-libraryDependencies += "org.postgresql" % "postgresql" % "42.4.0"
+libraryDependencies += "org.postgresql" % "postgresql" % "42.4.1"
 libraryDependencies += cacheApi
 libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.7.0"
 libraryDependencies += guice
