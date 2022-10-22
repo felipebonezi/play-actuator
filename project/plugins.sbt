@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.7.0")
-addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.10")
+addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.11")
 
 // Code formatter for Scala.
 // See more: https://github.com/scalameta/sbt-scalafmt
