@@ -24,7 +24,7 @@ import Dependencies.scala213
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core)
+  .aggregate(actuator)
   .settings(
     name               := "play-actuator-root",
     crossScalaVersions := Nil,
@@ -32,7 +32,17 @@ lazy val root = project
   )
 
 lazy val core = project
+  .in(file("play-actuator-core"))
+  .settings(
+    scalaVersion       := scala213,
+    crossScalaVersions := Seq(scala212, scala213),
+    libraryDependencies ++= Dependencies.core,
+    publish / skip := true
+  )
+
+lazy val actuator = project
   .in(file("play-actuator"))
+  .dependsOn(core)
   .settings(
     name                               := s"$repoName",
     organization                       := "io.github.felipebonezi",
@@ -50,6 +60,26 @@ lazy val core = project
     Dependencies.actuator,
   )
   .enablePlugins(Common)
+
+lazy val database = project
+  .in(file("play-actuator-indicators/database"))
+  .dependsOn(core)
+  .settings(
+    scalaVersion       := scala213,
+    crossScalaVersions := Seq(scala212, scala213),
+    Dependencies.db,
+    publish / skip := true
+  )
+
+lazy val redis = project
+  .in(file("play-actuator-indicators/redis"))
+  .dependsOn(core)
+  .settings(
+    scalaVersion       := scala213,
+    crossScalaVersions := Seq(scala212, scala213),
+    Dependencies.redis,
+    publish / skip := true
+  )
 
 addCommandAlias(
   "validateCode",

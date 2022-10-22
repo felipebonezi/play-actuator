@@ -18,39 +18,61 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health.indicator
-import com.typesafe.config.Config
-import play.actuator.ActuatorEnum.Down
-import play.actuator.ActuatorEnum.Up
+package actuator.health.indicator
+
+import actuator.health.indicator.DatabaseJdbcIndicator.DB_TIMEOUT_SECS
+import play.actuator.ActuatorEnum
 import play.actuator.health.HealthBuilder
-import play.api.cache.redis.RedisConnector
+import play.api.db.Database
 
+import java.sql.Connection
 import javax.inject.Inject
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 
-class PlayRedisIndicator @Inject() (
-    config: Config,
-    connector: RedisConnector
-) extends RedisIndicator {
+class DatabaseJdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
+
+  private var connectionRef: Option[Connection] = None
+
+  private[this] def openConnection(): Connection = {
+    val connection = this.database.getConnection()
+    this.connectionRef = Some(connection)
+    connection
+  }
+
+  private[this] def getConnection: Connection = {
+    if (this.connectionRef.isEmpty) {
+      openConnection()
+    } else {
+      val connection = this.connectionRef.get
+      if (connection.isClosed) {
+        this.connectionRef = None
+        openConnection()
+      } else {
+        connection.isValid(DB_TIMEOUT_SECS)
+        connection
+      }
+    }
+  }
 
   override def info(builder: HealthBuilder): Unit = {
-    if (this.config.getString("play.cache.redis.recovery") != "log-and-fail") {
-      throw new IllegalArgumentException("You need to use 'log-and-fail' recovery for Redis.")
-    }
-
     try {
-      Await.result(this.connector.ping(), 3.seconds)
+      val metaData = this.getConnection.getMetaData
       builder
-        .withStatus(Up)
-        .withDetail("source", this.config.getString("play.cache.redis.source"))
+        .withStatus(ActuatorEnum.Up)
+        .withDetail("name", this.database.name)
+        .withDetail("url", this.database.url)
+        .withDetail("driver", metaData.getDriverName)
     } catch {
       case e: Exception =>
         builder
-          .withStatus(Down)
-          .withDetail("message", "Redis connection failed!")
+          .withStatus(ActuatorEnum.Down)
+          .withDetail("name", this.database.name)
+          .withDetail("url", this.database.url)
           .withDetail("exception", e.getMessage)
     }
   }
 
+}
+
+object DatabaseJdbcIndicator {
+  private val DB_TIMEOUT_SECS = 5000
 }

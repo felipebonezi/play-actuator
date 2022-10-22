@@ -48,12 +48,12 @@ jobs:
       matrix:
         distribution: [ 'corretto' ]
         jdk: [ '8', '11' ]
-        scala: [ '2.12.16', '2.13.8' ]
+        scala: [ '2.12.17', '2.13.10' ]
         experimental: [ false ]
         include:
           - jdk: '17'
             distribution: 'corretto'
-            scala: '2.13.8'
+            scala: '2.13.10'
             experimental: true
 
     steps:

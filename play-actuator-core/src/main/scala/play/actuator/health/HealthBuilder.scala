@@ -18,37 +18,28 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import sbt.Keys.libraryDependencies
-import sbt._
+package play.actuator.health
+import play.actuator.ActuatorEnum.Up
+import play.actuator.ActuatorEnum.Status
 
-object Dependencies {
+import scala.collection.mutable
 
-  val scala212 = "2.12.17"
-  val scala213 = "2.13.10"
+class HealthBuilder(val name: String) {
+  private var status: Status                    = Up
+  private val details: mutable.Map[String, Any] = mutable.Map()
 
-  val playVersion: String           = "2.8.18"
-  val playSlickVersion: String      = "5.1.0"
-  val playJsonVersion: String       = "2.9.3"
-  val playRedisVersion: String      = "2.7.0"
-  val typesafeConfigVersion: String = "1.4.2"
+  def withStatus(status: Status): HealthBuilder = {
+    this.status = status
+    this
+  }
 
-  val core: Seq[ModuleID] = Seq(
-    "com.typesafe.play" %% "play-guice" % playVersion,
-    "com.typesafe.play" %% "play-test"  % playVersion % Test,
-    "com.typesafe"       % "config"     % typesafeConfigVersion
-  )
+  def withDetail(name: String, value: Any): HealthBuilder = {
+    this.details += (name -> value)
+    this
+  }
 
-  val actuator = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-json" % playJsonVersion
-  )
-
-  val db = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-jdbc"  % playVersion,
-    "com.typesafe.play" %% "play-slick" % playSlickVersion
-  )
-
-  val redis = libraryDependencies ++= core ++ Seq(
-    "com.github.karelcemus" %% "play-redis" % playRedisVersion
-  )
+  def build: Health = {
+    new Health(this.name, this.status, this.details.toMap)
+  }
 
 }

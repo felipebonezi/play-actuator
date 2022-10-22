@@ -18,21 +18,29 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health.indicator
+package actuator.health.indicator
+
+import actuator.health.indicator.DatabaseSlickIndicator.DB_TIMEOUT_SECS
+import com.typesafe.config.Config
 import play.actuator.ActuatorEnum
 import play.actuator.health.HealthBuilder
-import play.actuator.health.indicator.DatabaseJdbcIndicator.DB_TIMEOUT_SECS
-import play.api.db.Database
+import play.api.db.slick.DatabaseConfigProvider
+import play.api.db.slick.HasDatabaseConfigProvider
+import slick.jdbc.JdbcProfile
 
 import java.sql.Connection
 import javax.inject.Inject
 
-class DatabaseJdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
+class DatabaseSlickIndicator @Inject() (
+    val config: Config,
+    protected val dbConfigProvider: DatabaseConfigProvider
+) extends DatabaseIndicator
+    with HasDatabaseConfigProvider[JdbcProfile] {
 
   private var connectionRef: Option[Connection] = None
 
   private[this] def openConnection(): Connection = {
-    val connection = this.database.getConnection()
+    val connection = this.db.source.createConnection()
     this.connectionRef = Some(connection)
     connection
   }
@@ -57,21 +65,21 @@ class DatabaseJdbcIndicator @Inject() (database: Database) extends DatabaseIndic
       val metaData = this.getConnection.getMetaData
       builder
         .withStatus(ActuatorEnum.Up)
-        .withDetail("name", this.database.name)
-        .withDetail("url", this.database.url)
+        .withDetail("name", this.dbConfigProvider.get.profileName)
+        .withDetail("url", this.config.getString("slick.dbs.default.db.url"))
         .withDetail("driver", metaData.getDriverName)
     } catch {
       case e: Exception =>
         builder
           .withStatus(ActuatorEnum.Down)
-          .withDetail("name", this.database.name)
-          .withDetail("url", this.database.url)
+          .withDetail("name", this.dbConfigProvider.get.profileName)
+          .withDetail("url", this.config.getString("slick.dbs.default.db.url"))
           .withDetail("exception", e.getMessage)
     }
   }
 
 }
 
-object DatabaseJdbcIndicator {
+object DatabaseSlickIndicator {
   private val DB_TIMEOUT_SECS = 5000
 }
