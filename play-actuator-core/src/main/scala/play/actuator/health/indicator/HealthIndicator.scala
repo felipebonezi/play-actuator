@@ -18,7 +18,11 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package actuator.health.indicator
-import play.actuator.health.indicator.BaseHealthIndicator
+package play.actuator.health.indicator
+import play.actuator.health.HealthBuilder
 
-trait DatabaseIndicator extends BaseHealthIndicator {}
+trait HealthIndicator {
+
+  def info(builder: HealthBuilder): Unit
+
+}

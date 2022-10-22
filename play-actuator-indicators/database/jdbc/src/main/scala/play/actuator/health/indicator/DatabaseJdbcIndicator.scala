@@ -18,17 +18,17 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package actuator.health.indicator
+package play.actuator.health.indicator
 
-import actuator.health.indicator.DatabaseJdbcIndicator.DB_TIMEOUT_SECS
 import play.actuator.ActuatorEnum
 import play.actuator.health.HealthBuilder
+import play.actuator.health.indicator.DatabaseJdbcIndicator.DB_TIMEOUT_SECS
 import play.api.db.Database
 
 import java.sql.Connection
 import javax.inject.Inject
 
-class DatabaseJdbcIndicator @Inject() (database: Database) extends DatabaseIndicator {
+class DatabaseJdbcIndicator @Inject() (database: Database) extends HealthIndicator {
 
   private var connectionRef: Option[Connection] = None
 

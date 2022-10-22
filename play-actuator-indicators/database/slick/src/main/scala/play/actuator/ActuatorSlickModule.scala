@@ -18,7 +18,24 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package actuator.health.indicator
-import play.actuator.health.indicator.BaseHealthIndicator
+package play.actuator
 
-trait RedisIndicator extends BaseHealthIndicator {}
+import com.google.inject.AbstractModule
+import com.google.inject.name.Names
+import play.actuator.health.indicator.DatabaseSlickIndicator
+import play.actuator.health.indicator.HealthIndicator
+import play.api.Configuration
+import play.api.Environment
+
+class ActuatorSlickModule(environment: Environment, config: Configuration) extends AbstractModule {
+
+  override def configure(): Unit = {
+    val confKey = "play.actuator.health.indicators.database"
+    if (config.getOptional[Boolean](confKey).getOrElse(false)) {
+      bind(classOf[HealthIndicator])
+        .annotatedWith(Names.named("databaseIndicator"))
+        .to(classOf[DatabaseSlickIndicator])
+    }
+  }
+
+}

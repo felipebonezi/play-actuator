@@ -20,7 +20,11 @@
  */
 package play.actuator.health
 import play.actuator.ActuatorEnum.Status
-import play.api.libs.json.{JsNull, JsNumber, JsString, Json, Writes}
+import play.api.libs.json.JsNull
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
 case class Health(name: String, status: Status, details: Map[String, Any]) {
   override def toString: String = s"Health(status=$status, details=$details)"

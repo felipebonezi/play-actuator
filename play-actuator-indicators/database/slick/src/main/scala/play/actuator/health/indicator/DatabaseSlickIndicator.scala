@@ -18,12 +18,12 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package actuator.health.indicator
+package play.actuator.health.indicator
 
-import actuator.health.indicator.DatabaseSlickIndicator.DB_TIMEOUT_SECS
 import com.typesafe.config.Config
 import play.actuator.ActuatorEnum
 import play.actuator.health.HealthBuilder
+import play.actuator.health.indicator.DatabaseSlickIndicator.DB_TIMEOUT_SECS
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class DatabaseSlickIndicator @Inject() (
     val config: Config,
     protected val dbConfigProvider: DatabaseConfigProvider
-) extends DatabaseIndicator
+) extends HealthIndicator
     with HasDatabaseConfigProvider[JdbcProfile] {
 
   private var connectionRef: Option[Connection] = None

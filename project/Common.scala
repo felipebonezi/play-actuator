@@ -32,7 +32,10 @@ object Common extends AutoPlugin {
 
   override def requires: Plugins = JvmPlugin && HeaderPlugin
 
-  val repoName = "play-actuator"
+  val repoName           = "play-actuator"
+  val jdbcIndicatorName  = "play-actuator-jdbc-indicator"
+  val slickIndicatorName = "play-actuator-slick-indicator"
+  val redisIndicatorName = "play-actuator-redis-indicator"
 
   override def globalSettings: Seq[Setting[_]] =
     Seq(

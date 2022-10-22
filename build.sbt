@@ -18,13 +18,13 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import Common.repoName
+import Common._
 import Dependencies.scala212
 import Dependencies.scala213
 
 lazy val root = project
   .in(file("."))
-  .aggregate(actuator)
+  .aggregate(core, actuator, jdbc, slick, redis)
   .settings(
     name               := "play-actuator-root",
     crossScalaVersions := Nil,
@@ -34,10 +34,20 @@ lazy val root = project
 lazy val core = project
   .in(file("play-actuator-core"))
   .settings(
-    scalaVersion       := scala213,
-    crossScalaVersions := Seq(scala212, scala213),
-    libraryDependencies ++= Dependencies.core,
-    publish / skip := true
+    name                               := s"$repoName-core",
+    organization                       := "io.github.felipebonezi",
+    scalaVersion                       := scala213,
+    crossScalaVersions                 := Seq(scala212, scala213),
+    versionScheme                      := Some("early-semver"),
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/felipebonezi/$repoName/play-actuator-core"),
+        s"scm:git:git@github.com:felipebonezi/$repoName.git"
+      )
+    ),
+    libraryDependencies ++= Dependencies.core
   )
 
 lazy val actuator = project
@@ -57,29 +67,72 @@ lazy val actuator = project
         s"scm:git:git@github.com:felipebonezi/$repoName.git"
       )
     ),
-    Dependencies.actuator,
+    Dependencies.actuator
   )
   .enablePlugins(Common)
 
-lazy val database = project
-  .in(file("play-actuator-indicators/database"))
+lazy val jdbc = project
+  .in(file("play-actuator-indicators/database/jdbc"))
   .dependsOn(core)
   .settings(
-    scalaVersion       := scala213,
-    crossScalaVersions := Seq(scala212, scala213),
-    Dependencies.db,
-    publish / skip := true
+    name                               := s"$jdbcIndicatorName",
+    organization                       := "io.github.felipebonezi",
+    scalaVersion                       := scala213,
+    crossScalaVersions                 := Seq(scala212, scala213),
+    versionScheme                      := Some("early-semver"),
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/felipebonezi/$repoName/play-actuator-indicators/database/jdbc"),
+        s"scm:git:git@github.com:felipebonezi/$repoName.git"
+      )
+    ),
+    Dependencies.jdbc
   )
+  .enablePlugins(Common)
+
+lazy val slick = project
+  .in(file("play-actuator-indicators/database/slick"))
+  .dependsOn(core)
+  .settings(
+    name                               := s"$slickIndicatorName",
+    organization                       := "io.github.felipebonezi",
+    scalaVersion                       := scala213,
+    crossScalaVersions                 := Seq(scala212, scala213),
+    versionScheme                      := Some("early-semver"),
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/felipebonezi/$repoName/play-actuator-indicators/database/slick"),
+        s"scm:git:git@github.com:felipebonezi/$repoName.git"
+      )
+    ),
+    Dependencies.slick
+  )
+  .enablePlugins(Common)
 
 lazy val redis = project
-  .in(file("play-actuator-indicators/redis"))
+  .in(file("play-actuator-indicators/database/redis"))
   .dependsOn(core)
   .settings(
-    scalaVersion       := scala213,
-    crossScalaVersions := Seq(scala212, scala213),
-    Dependencies.redis,
-    publish / skip := true
+    name                               := s"$redisIndicatorName",
+    organization                       := "io.github.felipebonezi",
+    scalaVersion                       := scala213,
+    crossScalaVersions                 := Seq(scala212, scala213),
+    versionScheme                      := Some("early-semver"),
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/felipebonezi/$repoName/play-actuator-indicators/database/redis"),
+        s"scm:git:git@github.com:felipebonezi/$repoName.git"
+      )
+    ),
+    Dependencies.redis
   )
+  .enablePlugins(Common)
 
 addCommandAlias(
   "validateCode",
