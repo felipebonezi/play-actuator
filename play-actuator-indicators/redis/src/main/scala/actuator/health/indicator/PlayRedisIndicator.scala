@@ -18,34 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health
-import play.actuator.ActuatorEnum.Status
-import play.api.libs.json.Format
-import play.api.libs.json.JsNull
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsString
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.Writes
+package actuator.health.indicator
 
-case class Health(name: String, status: Status, details: Map[String, Any]) {
-  override def toString: String = s"Health(status=$status, details=$details)"
-}
+import com.typesafe.config.Config
+import play.actuator.ActuatorEnum
+import play.actuator.health.HealthBuilder
+import play.api.cache.redis.RedisConnector
 
-object Health {
-  implicit val writes: Writes[Health] =
-    (o: Health) =>
-      Json.obj(
-        o.name -> Json.obj(
-          "status" -> o.status,
-          "details" -> Json.toJson(o.details.map { case (key, value) =>
-            key -> (value match {
-              case x: String => JsString(x)
-              case x: Int    => JsNumber(x)
-              case x: Long   => JsNumber(x)
-              case _         => JsNull
-            })
-          })
-        )
-      )
+import javax.inject.Inject
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
+class PlayRedisIndicator @Inject() (
+    config: Config,
+    connector: RedisConnector
+) extends RedisIndicator {
+
+  override def info(builder: HealthBuilder): Unit = {
+    if (this.config.getString("play.cache.redis.recovery") != "log-and-fail") {
+      throw new IllegalArgumentException("You need to use 'log-and-fail' recovery for Redis.")
+    }
+
+    try {
+      Await.result(this.connector.ping(), 3.seconds)
+      builder
+        .withStatus(ActuatorEnum.Up)
+        .withDetail("source", this.config.getString("play.cache.redis.source"))
+    } catch {
+      case e: Exception =>
+        builder
+          .withStatus(ActuatorEnum.Down)
+          .withDetail("message", "Redis connection failed!")
+          .withDetail("exception", e.getMessage)
+    }
+  }
+
 }

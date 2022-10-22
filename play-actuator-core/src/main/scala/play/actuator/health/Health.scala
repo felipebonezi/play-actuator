@@ -18,6 +18,28 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health.indicator
+package play.actuator.health
+import play.actuator.ActuatorEnum.Status
+import play.api.libs.json.{JsNull, JsNumber, JsString, Json, Writes}
 
-trait DatabaseIndicator extends BaseHealthIndicator {}
+case class Health(name: String, status: Status, details: Map[String, Any]) {
+  override def toString: String = s"Health(status=$status, details=$details)"
+}
+
+object Health {
+  implicit val writes: Writes[Health] =
+    (o: Health) =>
+      Json.obj(
+        o.name -> Json.obj(
+          "status" -> o.status,
+          "details" -> Json.toJson(o.details.map { case (key, value) =>
+            key -> (value match {
+              case x: String => JsString(x)
+              case x: Int    => JsNumber(x)
+              case x: Long   => JsNumber(x)
+              case _         => JsNull
+            })
+          })
+        )
+      )
+}

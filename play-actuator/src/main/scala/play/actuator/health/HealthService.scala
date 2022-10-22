@@ -20,26 +20,24 @@
  */
 package play.actuator.health
 
-import play.actuator.ActuatorEnum.Down
 import play.actuator.ActuatorEnum.Status
 import play.actuator.ActuatorEnum.Up
-import play.actuator.health.indicator.DatabaseIndicator
+import play.actuator.ActuatorEnum.Down
 import play.actuator.health.indicator.DiskSpaceIndicator
-import play.actuator.health.indicator.RedisIndicator
 import play.api.Configuration
 
-import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
+import javax.inject.Named
+import javax.inject.Inject
 import scala.collection.mutable
 
 @Singleton
 class HealthService @Inject() (
     config: Configuration,
-    diskSpaceIndicator: DiskSpaceIndicator,
-    @Named("jdbcIndicator") jdbcIndicator: DatabaseIndicator,
-    @Named("slickIndicator") slickIndicator: DatabaseIndicator,
-    redisIndicator: RedisIndicator
+    diskSpaceIndicator: DiskSpaceIndicator
+//    @Named("jdbcIndicator") jdbcIndicator: DatabaseIndicator,
+//    @Named("slickIndicator") slickIndicator: DatabaseIndicator,
+//    redisIndicator: RedisIndicator
 ) {
 
   def globalStatus: Status =
@@ -57,23 +55,23 @@ class HealthService @Inject() (
       indicators.append(builder.build)
     }
 
-    if (isIndicatorActive("jdbc")) {
-      val builder = new HealthBuilder("jdbc")
-      this.jdbcIndicator.info(builder)
-      indicators.append(builder.build)
-    }
-
-    if (isIndicatorActive("slick")) {
-      val builder = new HealthBuilder("slick")
-      this.slickIndicator.info(builder)
-      indicators.append(builder.build)
-    }
-
-    if (isIndicatorActive("redis")) {
-      val builder = new HealthBuilder("redis")
-      this.redisIndicator.info(builder)
-      indicators.append(builder.build)
-    }
+//    if (isIndicatorActive("jdbc")) {
+//      val builder = new HealthBuilder("jdbc")
+//      this.jdbcIndicator.info(builder)
+//      indicators.append(builder.build)
+//    }
+//
+//    if (isIndicatorActive("slick")) {
+//      val builder = new HealthBuilder("slick")
+//      this.slickIndicator.info(builder)
+//      indicators.append(builder.build)
+//    }
+//
+//    if (isIndicatorActive("redis")) {
+//      val builder = new HealthBuilder("redis")
+//      this.redisIndicator.info(builder)
+//      indicators.append(builder.build)
+//    }
 
     indicators.toSeq
   }

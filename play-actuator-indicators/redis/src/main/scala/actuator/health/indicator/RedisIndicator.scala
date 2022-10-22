@@ -18,28 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health
-import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
+package actuator.health.indicator
+import play.actuator.health.indicator.BaseHealthIndicator
 
-import scala.collection.mutable
-
-class HealthBuilder(val name: String) {
-  private var status: Status                    = Up
-  private val details: mutable.Map[String, Any] = mutable.Map()
-
-  def withStatus(status: Status): HealthBuilder = {
-    this.status = status
-    this
-  }
-
-  def withDetail(name: String, value: Any): HealthBuilder = {
-    this.details += (name -> value)
-    this
-  }
-
-  def build: Health = {
-    new Health(this.name, this.status, this.details.toMap)
-  }
-
-}
+trait RedisIndicator extends BaseHealthIndicator {}

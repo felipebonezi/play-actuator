@@ -18,6 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health.indicator
+package actuator.health.indicator
+import play.actuator.health.indicator.BaseHealthIndicator
 
-trait RedisIndicator extends BaseHealthIndicator {}
+trait DatabaseIndicator extends BaseHealthIndicator {}
