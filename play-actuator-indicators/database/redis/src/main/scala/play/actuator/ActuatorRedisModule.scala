@@ -18,11 +18,26 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health.indicator
+package play.actuator
+
+import com.google.inject.AbstractModule
+import com.google.inject.name.Names
+import play.actuator.ActuatorEnum.Up
 import play.actuator.health.HealthBuilder
+import play.actuator.health.indicator.HealthIndicator
+import play.actuator.health.indicator.RedisHealthIndicator
+import play.api.Configuration
+import play.api.Environment
 
-abstract class BaseHealthIndicator {
+class ActuatorRedisModule(environment: Environment, config: Configuration) extends AbstractModule {
 
-  def info(builder: HealthBuilder): Unit
+  override def configure(): Unit = {
+    val confKey = "play.actuator.health.indicators.redis"
+    if (config.getOptional[Boolean](confKey).getOrElse(false)) {
+      bind(classOf[HealthIndicator])
+        .annotatedWith(Names.named("redisIndicator"))
+        .to(classOf[RedisHealthIndicator])
+    }
+  }
 
 }

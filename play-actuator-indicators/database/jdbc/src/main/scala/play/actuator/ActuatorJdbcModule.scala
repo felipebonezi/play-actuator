@@ -18,38 +18,23 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package actuator.health.indicator
+package play.actuator
 
-import com.typesafe.config.Config
-import play.actuator.ActuatorEnum
-import play.actuator.health.HealthBuilder
-import play.api.cache.redis.RedisConnector
+import com.google.inject.AbstractModule
+import com.google.inject.name.Names
+import play.actuator.health.indicator.DatabaseJdbcIndicator
+import play.actuator.health.indicator.HealthIndicator
+import play.api.Configuration
+import play.api.Environment
 
-import javax.inject.Inject
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+class ActuatorJdbcModule(environment: Environment, config: Configuration) extends AbstractModule {
 
-class PlayRedisIndicator @Inject() (
-    config: Config,
-    connector: RedisConnector
-) extends RedisIndicator {
-
-  override def info(builder: HealthBuilder): Unit = {
-    if (this.config.getString("play.cache.redis.recovery") != "log-and-fail") {
-      throw new IllegalArgumentException("You need to use 'log-and-fail' recovery for Redis.")
-    }
-
-    try {
-      Await.result(this.connector.ping(), 3.seconds)
-      builder
-        .withStatus(ActuatorEnum.Up)
-        .withDetail("source", this.config.getString("play.cache.redis.source"))
-    } catch {
-      case e: Exception =>
-        builder
-          .withStatus(ActuatorEnum.Down)
-          .withDetail("message", "Redis connection failed!")
-          .withDetail("exception", e.getMessage)
+  override def configure(): Unit = {
+    val confKey = "play.actuator.health.indicators.database"
+    if (config.getOptional[Boolean](confKey).getOrElse(false)) {
+      bind(classOf[HealthIndicator])
+        .annotatedWith(Names.named("databaseIndicator"))
+        .to(classOf[DatabaseJdbcIndicator])
     }
   }
 

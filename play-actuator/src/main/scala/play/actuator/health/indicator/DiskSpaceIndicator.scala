@@ -29,7 +29,7 @@ import java.io.File
 import javax.inject.Singleton
 
 @Singleton
-class DiskSpaceIndicator extends BaseHealthIndicator {
+class DiskSpaceIndicator extends HealthIndicator {
 
   private val folder = new File("/")
 

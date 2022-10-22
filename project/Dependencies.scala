@@ -42,8 +42,11 @@ object Dependencies {
     "com.typesafe.play" %% "play-json" % playJsonVersion
   )
 
-  val db = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-jdbc"  % playVersion,
+  val jdbc = libraryDependencies ++= core ++ Seq(
+    "com.typesafe.play" %% "play-jdbc" % playVersion
+  )
+
+  val slick = libraryDependencies ++= core ++ Seq(
     "com.typesafe.play" %% "play-slick" % playSlickVersion
   )
 

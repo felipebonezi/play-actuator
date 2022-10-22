@@ -37,7 +37,34 @@ jobs:
           path: ${{github.workspace}}/target/scalastyle-report/
 
   build:
-    name: Build & Analyze
+    name: Build
+    if: "(github.event.release || github.event.release.prerelease) == false"
+    needs: [ validate ]
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        distribution: [ 'corretto' ]
+        jdk: [ '8' ]
+        scala: [ '2.12.17', '2.13.10' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.jdk }}
+          cache: 'sbt'
+
+      - name: Perform Build / Test
+        run: sbt ++${{ matrix.scala }} compile test
+
+  optional-build:
+    name: Build (Optional)
     if: "(github.event.release || github.event.release.prerelease) == false"
     continue-on-error: ${{ matrix.experimental }}
     needs: [ validate ]
@@ -47,7 +74,7 @@ jobs:
       fail-fast: true
       matrix:
         distribution: [ 'corretto' ]
-        jdk: [ '8', '11' ]
+        jdk: [ '11' ]
         scala: [ '2.12.17', '2.13.10' ]
         experimental: [ false ]
         include:
@@ -69,6 +96,13 @@ jobs:
 
       - name: Perform Build / Test
         run: sbt ++${{ matrix.scala }} compile test
+
+  ready:
+    name: Ready to Merge
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Ready to merge!"
 
   publish:
     name: Publish to Sonatype
