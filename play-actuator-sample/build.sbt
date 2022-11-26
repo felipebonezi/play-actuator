@@ -31,7 +31,7 @@ resolvers ++= DefaultOptions.resolvers(snapshot = true)
 libraryDependencies += javaJdbc
 libraryDependencies += cacheApi
 libraryDependencies += guice
-libraryDependencies += "org.postgresql"         % "postgresql" % "42.5.0"
+libraryDependencies += "org.postgresql"         % "postgresql" % "42.5.1"
 libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.7.0"
 
 lazy val actuatorVersion = "0.2.0"
