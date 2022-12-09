@@ -76,6 +76,10 @@ Show to you information about your Redis connection.
 
 `play.actuator.health.indicators.redis = true`
 
+```sbt
+  libraryDependencies ++= "io.github.felipebonezi" %% "play-actuator-redis-indicator" % "(version)"
+```
+
 ## Scala compatibility
 
 This project is compatible with Scala `2.12` and `2.13`, so you need to use the right version.
