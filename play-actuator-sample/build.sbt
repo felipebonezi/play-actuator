@@ -34,7 +34,7 @@ libraryDependencies += guice
 libraryDependencies += "org.postgresql"         % "postgresql" % "42.5.1"
 libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.7.0"
 
-lazy val actuatorVersion = "0.2.0"
+lazy val actuatorVersion = "0.2.0+8-0577a9db+20221209-1830-SNAPSHOT"
 libraryDependencies += "io.github.felipebonezi" %% "play-actuator"                 % actuatorVersion
 libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator" % actuatorVersion
 libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator"  % actuatorVersion

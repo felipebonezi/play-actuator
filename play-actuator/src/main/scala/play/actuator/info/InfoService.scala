@@ -18,45 +18,44 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.info
 
+import play.actuator.build.BuildInfo
+import play.api.Configuration
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.BaseController
-import play.api.mvc.ControllerComponents
-import play.actuator.ActuatorEnum.Down
-import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
-import play.actuator.health.HealthService
-import play.actuator.info.InfoService
-import play.api.libs.json.Json.toJson
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter.ISO_DATE_TIME
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import javax.inject.Singleton
 
-class ActuatorController @Inject() (healthService: HealthService, infoService: InfoService, cc: ControllerComponents)(
-    implicit ec: ExecutionContext
-) extends BaseController {
+@Singleton
+class InfoService @Inject() (config: Configuration) {
 
-  def health: Action[AnyContent] = Action {
-    val indicators = this.healthService.getIndicators
-    if (indicators.nonEmpty) {
-      val status = if (indicators.exists(indicator => indicator.status == Down)) {
-        Down
-      } else {
-        Up
-      }
-      Ok(Json.obj("status" -> status, "indicators" -> toJson(indicators)))
-    } else {
-      Ok(Json.obj("status" -> this.healthService.globalStatus))
+  import scala.collection.JavaConverters._
+
+  def getBuildInfos: JsValue = {
+    var buildInfos = Json.parse(BuildInfo.toJson).as[JsObject]
+    buildInfos = buildInfos + ("dateTime" -> JsString(LocalDateTime.now().format(ISO_DATE_TIME)))
+
+    if (isSystemInfoActive) {
+      import scala.collection.immutable.ListMap
+
+      val systemInfos       = System.getProperties.asScala.map(p => (p._1, JsString(p._2)))
+      val sortedSystemInfos = ListMap(systemInfos.toSeq.sortBy(_._1): _*)
+      buildInfos = buildInfos + ("system" -> JsObject(sortedSystemInfos))
     }
+
+    buildInfos
   }
 
-  def info: Action[AnyContent] = Action {
-    Ok(this.infoService.getBuildInfos)
-  }
-
-  protected override def controllerComponents: ControllerComponents = this.cc
+  private def isSystemInfoActive: Boolean =
+    this.config
+      .getOptional[Boolean](s"play.actuator.info.system.enabled")
+      .orElse(Some(false))
+      .get
 
 }
