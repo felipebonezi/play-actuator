@@ -53,6 +53,7 @@ lazy val core = project
 lazy val actuator = project
   .in(file("play-actuator"))
   .dependsOn(core)
+  .enablePlugins(Common, BuildInfoPlugin)
   .settings(
     name                               := s"$repoName",
     organization                       := "io.github.felipebonezi",
@@ -67,9 +68,11 @@ lazy val actuator = project
         s"scm:git:git@github.com:felipebonezi/$repoName.git"
       )
     ),
-    Dependencies.actuator
+    Dependencies.actuator,
+    buildInfoKeys    := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "play.actuator.build",
+    buildInfoOptions += BuildInfoOption.ToJson
   )
-  .enablePlugins(Common)
 
 lazy val jdbc = project
   .in(file("play-actuator-indicators/database/jdbc"))

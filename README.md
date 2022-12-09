@@ -35,7 +35,7 @@ Below we have all project endpoints available on this project.
 | Endpoint ID | Description                                  | Path                | Ready to use? |
 |-------------|----------------------------------------------|---------------------|---------------|
 | health      | Displays your application’s health status.   | `/actuator/health`  | ✔️            |
-| info        | Displays information about your application. | `/actuator/info`    | ✖️            |
+| info        | Displays information about your application. | `/actuator/info`    | ✔️            |
 | logfile     | Returns the contents of the log file.        | `/actuator/logfile` | ✖️            |
 
 ## Health endpoint details
@@ -79,6 +79,13 @@ Show to you information about your Redis connection.
 ```sbt
   libraryDependencies ++= "io.github.felipebonezi" %% "play-actuator-redis-indicator" % "(version)"
 ```
+
+## Info endpoint details
+
+You can enable to get all operational system info 
+inside the JSON return by `/actuator/info` route. Default is disabled.
+
+`play.actuator.info.system.enabled = true`
 
 ## Scala compatibility
 

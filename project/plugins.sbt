@@ -21,6 +21,10 @@
 addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.9.0")
 addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.11")
 
+// Build Info
+// See more: https://github.com/sbt/sbt-buildinfo
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
+
 // Code formatter for Scala.
 // See more: https://github.com/scalameta/sbt-scalafmt
 // Oficial Website: https://scalameta.org/scalafmt/
