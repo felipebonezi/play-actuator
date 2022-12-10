@@ -59,14 +59,12 @@ class DatabaseJdbcIndicator @Inject() (database: Database) extends HealthIndicat
       builder
         .withStatus(ActuatorEnum.Up)
         .withDetail("name", this.database.name)
-        .withDetail("url", this.database.url)
         .withDetail("driver", metaData.getDriverName)
     } catch {
       case e: Exception =>
         builder
           .withStatus(ActuatorEnum.Down)
           .withDetail("name", this.database.name)
-          .withDetail("url", this.database.url)
           .withDetail("exception", e.getMessage)
     }
   }
