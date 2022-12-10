@@ -66,14 +66,12 @@ class DatabaseSlickIndicator @Inject() (
       builder
         .withStatus(ActuatorEnum.Up)
         .withDetail("name", this.dbConfigProvider.get.profileName)
-        .withDetail("url", this.config.getString("slick.dbs.default.db.url"))
         .withDetail("driver", metaData.getDriverName)
     } catch {
       case e: Exception =>
         builder
           .withStatus(ActuatorEnum.Down)
           .withDetail("name", this.dbConfigProvider.get.profileName)
-          .withDetail("url", this.config.getString("slick.dbs.default.db.url"))
           .withDetail("exception", e.getMessage)
     }
   }
