@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.9.0")
-addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.11")
+addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.12")
 
 // Build Info
 // See more: https://github.com/sbt/sbt-buildinfo
