@@ -30,7 +30,7 @@ object Dependencies {
   val playSlickVersion: String      = "5.1.0"
   val playJsonVersion: String       = "2.10.4"
   val playRedisVersion: String      = "2.7.0"
-  val typesafeConfigVersion: String = "1.4.2"
+  val typesafeConfigVersion: String = "1.4.3"
 
   val core: Seq[ModuleID] = Seq(
     "com.typesafe.play" %% "play-guice" % playVersion,
