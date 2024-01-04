@@ -40,7 +40,7 @@ libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicato
 libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator"  % actuatorVersion
 
 libraryDependencies += specs2                    % Test
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "io.github.felipebonezi.controllers._"
