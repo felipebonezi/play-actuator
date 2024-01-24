@@ -26,7 +26,7 @@ object Dependencies {
   val scala212 = "2.12.17"
   val scala213 = "2.13.10"
 
-  val playVersion: String           = "2.8.19"
+  val playVersion: String           = "2.9.1"
   val playSlickVersion: String      = "5.1.0"
   val playJsonVersion: String       = "2.9.4"
   val playRedisVersion: String      = "2.7.0"
