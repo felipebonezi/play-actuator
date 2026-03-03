@@ -19,7 +19,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import Common._
-import Dependencies.scala212
 import Dependencies.scala213
 
 lazy val root = project
@@ -37,7 +36,7 @@ lazy val core = project
     name                               := s"$repoName-core",
     organization                       := "io.github.felipebonezi",
     scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    crossScalaVersions                 := Seq(scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -58,7 +57,7 @@ lazy val actuator = project
     name                               := s"$repoName",
     organization                       := "io.github.felipebonezi",
     scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    crossScalaVersions                 := Seq(scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -81,7 +80,7 @@ lazy val jdbc = project
     name                               := s"$jdbcIndicatorName",
     organization                       := "io.github.felipebonezi",
     scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    crossScalaVersions                 := Seq(scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -102,7 +101,7 @@ lazy val slick = project
     name                               := s"$slickIndicatorName",
     organization                       := "io.github.felipebonezi",
     scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    crossScalaVersions                 := Seq(scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -123,7 +122,7 @@ lazy val redis = project
     name                               := s"$redisIndicatorName",
     organization                       := "io.github.felipebonezi",
     scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    crossScalaVersions                 := Seq(scala213),
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",

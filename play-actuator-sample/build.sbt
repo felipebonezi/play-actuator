@@ -25,14 +25,14 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.13.10"
+scalaVersion := "2.13.16"
 
 resolvers ++= DefaultOptions.resolvers(snapshot = true)
 libraryDependencies += javaJdbc
 libraryDependencies += cacheApi
 libraryDependencies += guice
 libraryDependencies += "org.postgresql"         % "postgresql" % "42.7.2"
-libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.7.0"
+libraryDependencies += "com.github.karelcemus" %% "play-redis" % "3.0.0"
 
 lazy val actuatorVersion = "0.2.0+8-0577a9db+20221209-1830-SNAPSHOT"
 libraryDependencies += "io.github.felipebonezi" %% "play-actuator"                 % actuatorVersion

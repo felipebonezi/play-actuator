@@ -19,24 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.10.0")
-addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.12")
+addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.9.2")
 
 // Build Info
 // See more: https://github.com/sbt/sbt-buildinfo
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
 
 // Code formatter for Scala.
 // See more: https://github.com/scalameta/sbt-scalafmt
 // Oficial Website: https://scalameta.org/scalafmt/
-addSbtPlugin("org.scalameta"   % "sbt-scalafmt"          % "2.5.2")
+addSbtPlugin("org.scalameta"   % "sbt-scalafmt"          % "2.5.4")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 
 // Test Coverage plugin.
 // sbt-scoverage is a plugin for SBT that integrates the scoverage code coverage library.
 // See more: https://github.com/scoverage/sbt-scoverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.9")
-
-// Fixing Scala-Xml mess (Temp).
-ThisBuild / libraryDependencySchemes ++= Seq(
-  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
-)
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.2.2")

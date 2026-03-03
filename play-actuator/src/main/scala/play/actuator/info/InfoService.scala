@@ -35,7 +35,7 @@ import javax.inject.Singleton
 @Singleton
 class InfoService @Inject() (config: Configuration) {
 
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   def getBuildInfos: JsValue = {
     var buildInfos = Json.parse(BuildInfo.toJson).as[JsObject]
