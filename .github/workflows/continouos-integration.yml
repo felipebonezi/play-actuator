@@ -25,7 +25,9 @@ jobs:
         with:
           distribution: corretto
           java-version: '17'
-          cache: 'sbt'
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Check Project Code
         run: sbt validateCode
@@ -58,7 +60,9 @@ jobs:
         with:
           distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.jdk }}
-          cache: 'sbt'
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Perform Build / Test
         run: sbt ++${{ matrix.scala }} compile test
@@ -92,7 +96,9 @@ jobs:
         with:
           distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.jdk }}
-          cache: 'sbt'
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Perform Build / Test
         run: sbt ++${{ matrix.scala }} compile test
@@ -116,7 +122,9 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '17'
-          cache: 'sbt'
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Publish package
         run: sbt ci-release
