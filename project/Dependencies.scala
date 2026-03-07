@@ -23,7 +23,7 @@ import sbt._
 
 object Dependencies {
 
-  val scala213 = "2.13.16"
+  val scala213 = "2.13.18"
 
   val playVersion: String           = "2.9.10"
   val playSlickVersion: String      = "5.3.0"

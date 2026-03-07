@@ -25,7 +25,7 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.13.16"
+scalaVersion := "2.13.18"
 
 resolvers ++= DefaultOptions.resolvers(snapshot = true)
 libraryDependencies += javaJdbc
