@@ -1,13 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "schedule": [
     "every weekend"
   ],
   "dependencyDashboard": true,
-  "stabilityDays": 14,
+  "minimumReleaseAge": "14 days",
   "prCreation": "not-pending",
   "additionalBranchPrefix": "deps/",
   "addLabels": [
