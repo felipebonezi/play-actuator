@@ -49,7 +49,7 @@ jobs:
       matrix:
         distribution: [ 'corretto' ]
         jdk: [ '17' ]
-        scala: [ '2.13.16' ]
+        scala: [ '2.13.18' ]
 
     steps:
       - name: Checkout repository
@@ -79,12 +79,12 @@ jobs:
       matrix:
         distribution: [ 'corretto' ]
         jdk: [ '17' ]
-        scala: [ '2.13.16' ]
+        scala: [ '2.13.18' ]
         experimental: [ false ]
         include:
           - jdk: '21'
             distribution: 'corretto'
-            scala: '2.13.16'
+            scala: '2.13.18'
             experimental: true
 
     steps:
