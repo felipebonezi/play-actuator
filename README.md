@@ -19,10 +19,10 @@ suffix that matches the Play major your application is on (see
 [Cross-building](#cross-building) below).
 
 ```sbt
-  // Play 2.9
-  libraryDependencies += "io.github.felipebonezi" %% "play-actuator_play29" % "(version)"
+  // Play 2.9 (existing, unsuffixed coordinates - no migration needed)
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator" % "(version)"
 
-  // Play 3.0
+  // Play 3.0 (new)
   libraryDependencies += "io.github.felipebonezi" %% "play-actuator_play30" % "(version)"
 ```
 
@@ -68,7 +68,7 @@ It depends on which dependency indicator you'll use.
 #### JDBC
 ```sbt
   // Play 2.9
-  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator_play29" % "(version)"
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator" % "(version)"
   // Play 3.0
   libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator_play30" % "(version)"
 ```
@@ -76,7 +76,7 @@ It depends on which dependency indicator you'll use.
 #### Slick
 ```sbt
   // Play 2.9
-  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-slick-indicator_play29" % "(version)"
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-slick-indicator" % "(version)"
   // Play 3.0
   libraryDependencies += "io.github.felipebonezi" %% "play-actuator-slick-indicator_play30" % "(version)"
 ```
@@ -90,7 +90,7 @@ Show to you information about your Redis connection.
 
 ```sbt
   // Play 2.9
-  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator_play29" % "(version)"
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator" % "(version)"
   // Play 3.0
   libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator_play30" % "(version)"
 ```
@@ -107,10 +107,15 @@ inside the JSON return by `/actuator/info` route. Default is disabled.
 `play-actuator` is published for two Play majors. Pick the coordinate
 suffix that matches the Play version your application is on:
 
-| Your Play | Coordinate suffix | Scala         |
-|-----------|-------------------|---------------|
-| 2.9.x     | `_play29`         | 2.13          |
-| 3.0.x     | `_play30`         | 2.13 or 3.3   |
+| Your Play | Coordinate suffix     | Scala         |
+|-----------|-----------------------|---------------|
+| 2.9.x     | *(none, unsuffixed)*  | 2.13          |
+| 3.0.x     | `_play30`             | 2.13 or 3.3   |
+
+The Play 2.9 axis continues to publish under the original, unsuffixed
+coordinates — existing consumers do **not** need to update their
+`libraryDependencies` strings when they pick up a new release. Only the
+new Play 3.0 axis introduces a coordinate suffix.
 
 For local development, switch axes with the `play.version` JVM property
 (or the equivalent `PLAY_VERSION` env var). The default is Play 2.9:

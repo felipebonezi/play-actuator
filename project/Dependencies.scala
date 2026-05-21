@@ -48,8 +48,11 @@ object PlayCrossBuilding {
   val playRedisVersion: String      = if (isPlay30) "5.4.0" else "3.0.0"
   val typesafeConfigVersion: String = "1.4.3"
 
-  // Suffix lets the two axes coexist in Maven Central without colliding.
-  val artifactSuffix: String = if (isPlay30) "_play30" else "_play29"
+  // Suffix lets the Play 3.0 axis coexist with the existing unsuffixed
+  // Play 2.9 artifacts on Maven Central — keeping the 2.9 coordinates
+  // unchanged means consumers already on Play 2.9 don't need to touch
+  // their build.sbt.
+  val artifactSuffix: String = if (isPlay30) "_play30" else ""
 }
 
 object Dependencies {
