@@ -45,7 +45,7 @@ class InfoService @Inject() (config: Configuration) {
       import scala.collection.immutable.ListMap
 
       val systemInfos       = System.getProperties.asScala.map(p => (p._1, JsString(p._2)))
-      val sortedSystemInfos = ListMap(systemInfos.toSeq.sortBy(_._1): _*)
+      val sortedSystemInfos = ListMap.from(systemInfos.toSeq.sortBy(_._1))
       buildInfos = buildInfos + ("system" -> JsObject(sortedSystemInfos))
     }
 
