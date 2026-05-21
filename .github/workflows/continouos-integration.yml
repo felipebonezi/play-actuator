@@ -14,9 +14,15 @@ on:
 
 jobs:
   validate:
-    name: Validate Code
+    name: Validate Code (Play ${{ matrix.play }})
     if: "(github.event.release || github.event.release.prerelease) == false"
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        play: [ '2.9', '3.0' ]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -30,26 +36,28 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Check Project Code
-        run: sbt validateCode
+        run: sbt -Dplay.version=${{ matrix.play }} validateCode
 
       - name: Upload ScalaStyle Report (XML)
+        if: matrix.play == '2.9'
         uses: actions/upload-artifact@v4
         with:
           name: scalastyle-reports
           path: ${{github.workspace}}/target/scalastyle-report/
 
   build:
-    name: Build
+    name: Build (Play ${{ matrix.play }} / Scala ${{ matrix.scala }})
     if: "(github.event.release || github.event.release.prerelease) == false"
     needs: [ validate ]
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        distribution: [ 'corretto' ]
-        jdk: [ '17' ]
-        scala: [ '2.13.18' ]
+        include:
+          - { play: '2.9', scala: '2.13.18', jdk: '17' }
+          - { play: '3.0', scala: '2.13.18', jdk: '17' }
+          - { play: '3.0', scala: '3.3.6',   jdk: '17' }
 
     steps:
       - name: Checkout repository
@@ -58,34 +66,29 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: ${{ matrix.distribution }}
+          distribution: corretto
           java-version: ${{ matrix.jdk }}
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
       - name: Perform Build / Test
-        run: sbt ++${{ matrix.scala }} compile test
+        run: sbt -Dplay.version=${{ matrix.play }} ++${{ matrix.scala }} compile test
 
   optional-build:
-    name: Build (Optional)
+    name: Build / Optional (Play ${{ matrix.play }} / Scala ${{ matrix.scala }} / JDK ${{ matrix.jdk }})
     if: "(github.event.release || github.event.release.prerelease) == false"
     continue-on-error: ${{ matrix.experimental }}
     needs: [ validate ]
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        distribution: [ 'corretto' ]
-        jdk: [ '17' ]
-        scala: [ '2.13.18' ]
-        experimental: [ false ]
         include:
-          - jdk: '21'
-            distribution: 'corretto'
-            scala: '2.13.18'
-            experimental: true
+          - { play: '2.9', scala: '2.13.18', jdk: '21', experimental: true }
+          - { play: '3.0', scala: '2.13.18', jdk: '21', experimental: true }
+          - { play: '3.0', scala: '3.3.6',   jdk: '21', experimental: true }
 
     steps:
       - name: Checkout repository
@@ -94,14 +97,14 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: ${{ matrix.distribution }}
+          distribution: corretto
           java-version: ${{ matrix.jdk }}
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
       - name: Perform Build / Test
-        run: sbt ++${{ matrix.scala }} compile test
+        run: sbt -Dplay.version=${{ matrix.play }} ++${{ matrix.scala }} compile test
 
   ready:
     name: Ready to Merge
@@ -111,9 +114,16 @@ jobs:
       - run: echo "Ready to merge!"
 
   publish:
-    name: Publish to Sonatype
+    name: Publish to Sonatype (Play ${{ matrix.play }})
     if: "github.event.release || github.event.release.prerelease"
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        play: [ '2.9', '3.0' ]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -127,7 +137,7 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Publish package
-        run: sbt ci-release
+        run: sbt -Dplay.version=${{ matrix.play }} ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}

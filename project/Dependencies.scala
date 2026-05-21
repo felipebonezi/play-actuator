@@ -21,36 +21,69 @@
 import sbt.Keys.libraryDependencies
 import sbt._
 
-object Dependencies {
+// Single source of truth for the Play / Scala / ecosystem-library axis selected
+// at sbt boot time. Pick the Play 3.0 axis with `-Dplay.version=3.0` or
+// `PLAY_VERSION=3.0` in the env. Default stays on Play 2.9.
+object PlayCrossBuilding {
+  val DefaultPlayVersion = "2.9"
 
-  val scala213 = "2.13.18"
+  val playMajor: String = sys.props
+    .getOrElse("play.version", sys.env.getOrElse("PLAY_VERSION", DefaultPlayVersion))
+    .trim
 
-  val playVersion: String           = "2.9.10"
-  val playSlickVersion: String      = "5.3.0"
-  val playJsonVersion: String       = "2.10.6"
-  val playRedisVersion: String      = "3.0.0"
+  val isPlay30: Boolean = playMajor.startsWith("3.")
+  val isPlay29: Boolean = playMajor.startsWith("2.9")
+  require(isPlay29 || isPlay30, s"Unsupported play.version=$playMajor (expected 2.9 or 3.0)")
+
+  val Scala213: String            = "2.13.18"
+  val Scala3: String              = "3.3.6"
+  val crossScala: Seq[String]     = if (isPlay30) Seq(Scala213, Scala3) else Seq(Scala213)
+  val defaultScalaVersion: String = Scala213
+
+  val playGroup: String             = if (isPlay30) "org.playframework" else "com.typesafe.play"
+  val playRedisGroup: String        = "com.github.karelcemus"
+  val playVersion: String           = if (isPlay30) "3.0.10" else "2.9.10"
+  val playJsonVersion: String       = if (isPlay30) "3.0.6" else "2.10.6"
+  val playSlickVersion: String      = if (isPlay30) "6.2.0" else "5.3.0"
+  val playRedisVersion: String      = if (isPlay30) "5.4.0" else "3.0.0"
   val typesafeConfigVersion: String = "1.4.3"
 
+  // Suffix lets the Play 3.0 axis coexist with the existing unsuffixed
+  // Play 2.9 artifacts on Maven Central — keeping the 2.9 coordinates
+  // unchanged means consumers already on Play 2.9 don't need to touch
+  // their build.sbt.
+  val artifactSuffix: String = if (isPlay30) "_play30" else ""
+}
+
+object Dependencies {
+
+  import PlayCrossBuilding._
+
+  // Back-compat aliases preserved so the existing build.sbt structure
+  // and any external references still resolve.
+  val scala213: String           = Scala213
+  val crossScalaSeq: Seq[String] = crossScala
+
   val core: Seq[ModuleID] = Seq(
-    "com.typesafe.play" %% "play-guice" % playVersion,
-    "com.typesafe.play" %% "play-test"  % playVersion % Test,
-    "com.typesafe"       % "config"     % typesafeConfigVersion
+    playGroup     %% "play-guice" % playVersion,
+    playGroup     %% "play-test"  % playVersion % Test,
+    "com.typesafe" % "config"     % typesafeConfigVersion
   )
 
   val actuator = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-json" % playJsonVersion
+    playGroup %% "play-json" % playJsonVersion
   )
 
   val jdbc = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-jdbc" % playVersion
+    playGroup %% "play-jdbc" % playVersion
   )
 
   val slick = libraryDependencies ++= core ++ Seq(
-    "com.typesafe.play" %% "play-slick" % playSlickVersion
+    playGroup %% "play-slick" % playSlickVersion
   )
 
   val redis = libraryDependencies ++= core ++ Seq(
-    "com.github.karelcemus" %% "play-redis" % playRedisVersion
+    playRedisGroup %% "play-redis" % playRedisVersion
   )
 
 }

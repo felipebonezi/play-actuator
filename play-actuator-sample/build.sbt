@@ -31,13 +31,13 @@ resolvers ++= DefaultOptions.resolvers(snapshot = true)
 libraryDependencies += javaJdbc
 libraryDependencies += cacheApi
 libraryDependencies += guice
-libraryDependencies += "org.postgresql"         % "postgresql" % "42.7.2"
-libraryDependencies += "com.github.karelcemus" %% "play-redis" % "3.0.0"
+libraryDependencies += "org.postgresql"         % "postgresql" % "42.7.4"
+libraryDependencies += "com.github.karelcemus" %% "play-redis" % "5.4.0"
 
-lazy val actuatorVersion = "0.2.0+8-0577a9db+20221209-1830-SNAPSHOT"
-libraryDependencies += "io.github.felipebonezi" %% "play-actuator"                 % actuatorVersion
-libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator" % actuatorVersion
-libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator"  % actuatorVersion
+lazy val actuatorVersion = "0.0.0+50-9882b9cc+20260521-0238-SNAPSHOT"
+libraryDependencies += "io.github.felipebonezi" %% "play-actuator_play30"                 % actuatorVersion
+libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator_play30" % actuatorVersion
+libraryDependencies += "io.github.felipebonezi" %% "play-actuator-jdbc-indicator_play30"  % actuatorVersion
 
 libraryDependencies += specs2                    % Test
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
