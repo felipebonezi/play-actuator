@@ -35,7 +35,7 @@ import javax.inject.Singleton
 @Singleton
 class InfoService @Inject() (config: Configuration) {
 
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   def getBuildInfos: JsValue = {
     var buildInfos = Json.parse(BuildInfo.toJson).as[JsObject]
@@ -45,7 +45,7 @@ class InfoService @Inject() (config: Configuration) {
       import scala.collection.immutable.ListMap
 
       val systemInfos       = System.getProperties.asScala.map(p => (p._1, JsString(p._2)))
-      val sortedSystemInfos = ListMap(systemInfos.toSeq.sortBy(_._1): _*)
+      val sortedSystemInfos = ListMap.from(systemInfos.toSeq.sortBy(_._1))
       buildInfos = buildInfos + ("system" -> JsObject(sortedSystemInfos))
     }
 

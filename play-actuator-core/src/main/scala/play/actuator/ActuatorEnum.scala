@@ -20,8 +20,16 @@
  */
 package play.actuator
 
+import play.api.libs.json.JsString
+import play.api.libs.json.Writes
+
 object ActuatorEnum extends Enumeration {
   type Status = Value
 
   val Up, Down = Value
+
+  // Play JSON 2.x synthesises a Writes for Enumeration#Value automatically on
+  // Scala 2.13, but Scala 3 does not pick that path up; expose an explicit
+  // Writes via the companion so the same source compiles on both axes.
+  implicit val statusWrites: Writes[Status] = (s: Status) => JsString(s.toString)
 }

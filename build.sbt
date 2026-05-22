@@ -19,8 +19,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import Common._
-import Dependencies.scala212
-import Dependencies.scala213
+import PlayCrossBuilding.artifactSuffix
+import PlayCrossBuilding.crossScala
+import PlayCrossBuilding.defaultScalaVersion
+import PlayCrossBuilding.isPlay30
 
 lazy val root = project
   .in(file("."))
@@ -34,10 +36,10 @@ lazy val root = project
 lazy val core = project
   .in(file("play-actuator-core"))
   .settings(
-    name                               := s"$repoName-core",
+    name                               := s"$repoName-core$artifactSuffix",
     organization                       := "io.github.felipebonezi",
-    scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -55,10 +57,10 @@ lazy val actuator = project
   .dependsOn(core)
   .enablePlugins(Common, BuildInfoPlugin)
   .settings(
-    name                               := s"$repoName",
+    name                               := s"$repoName$artifactSuffix",
     organization                       := "io.github.felipebonezi",
-    scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -78,10 +80,10 @@ lazy val jdbc = project
   .in(file("play-actuator-indicators/database/jdbc"))
   .dependsOn(core)
   .settings(
-    name                               := s"$jdbcIndicatorName",
+    name                               := s"$jdbcIndicatorName$artifactSuffix",
     organization                       := "io.github.felipebonezi",
-    scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -99,10 +101,10 @@ lazy val slick = project
   .in(file("play-actuator-indicators/database/slick"))
   .dependsOn(core)
   .settings(
-    name                               := s"$slickIndicatorName",
+    name                               := s"$slickIndicatorName$artifactSuffix",
     organization                       := "io.github.felipebonezi",
-    scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -120,10 +122,10 @@ lazy val redis = project
   .in(file("play-actuator-indicators/database/redis"))
   .dependsOn(core)
   .settings(
-    name                               := s"$redisIndicatorName",
+    name                               := s"$redisIndicatorName$artifactSuffix",
     organization                       := "io.github.felipebonezi",
-    scalaVersion                       := scala213,
-    crossScalaVersions                 := Seq(scala212, scala213),
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
     versionScheme                      := Some("early-semver"),
     ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
     ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
@@ -137,14 +139,26 @@ lazy val redis = project
   )
   .enablePlugins(Common)
 
+// scalastyle 1.0.0 cannot parse Scala 3, so it's gated to the Play 2.9 (Scala
+// 2.13-only) axis. Scala 3 sources are still covered by scalafmt + compiler.
 addCommandAlias(
   "validateCode",
-  List(
-    "headerCheckAll",
-    "scalafmtSbtCheck",
-    "scalafmtCheckAll",
-    "test:scalafmtCheckAll",
-    "scalastyle",
-    "test:scalastyle",
+  (
+    if (isPlay30)
+      List(
+        "headerCheckAll",
+        "scalafmtSbtCheck",
+        "scalafmtCheckAll",
+        "test:scalafmtCheckAll",
+      )
+    else
+      List(
+        "headerCheckAll",
+        "scalafmtSbtCheck",
+        "scalafmtCheckAll",
+        "test:scalafmtCheckAll",
+        "scalastyle",
+        "test:scalastyle",
+      )
   ).mkString(";")
 )
