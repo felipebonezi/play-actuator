@@ -46,7 +46,7 @@ object PlayCrossBuilding {
   val playJsonVersion: String       = if (isPlay30) "3.0.6" else "2.10.6"
   val playSlickVersion: String      = if (isPlay30) "6.2.0" else "5.3.0"
   val playRedisVersion: String      = if (isPlay30) "5.4.0" else "3.0.0"
-  val typesafeConfigVersion: String = "1.4.3"
+  val typesafeConfigVersion: String = "1.4.8"
 
   // Suffix lets the Play 3.0 axis coexist with the existing unsuffixed
   // Play 2.9 artifacts on Maven Central — keeping the 2.9 coordinates
