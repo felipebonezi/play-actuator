@@ -24,7 +24,7 @@ jobs:
         play: [ '2.9', '3.0' ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -61,7 +61,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -92,7 +92,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -125,7 +125,7 @@ jobs:
         play: [ '2.9', '3.0' ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup JDK
         uses: actions/setup-java@v4
