@@ -36,6 +36,7 @@ object Common extends AutoPlugin {
   val jdbcIndicatorName  = "play-actuator-jdbc-indicator"
   val slickIndicatorName = "play-actuator-slick-indicator"
   val redisIndicatorName = "play-actuator-redis-indicator"
+  val metricsName        = "play-actuator-metrics"
 
   override def globalSettings: Seq[Setting[_]] =
     Seq(

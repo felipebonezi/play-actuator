@@ -35,9 +35,12 @@ import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
 
-class ActuatorController @Inject() (healthService: HealthService, infoService: InfoService, cc: ControllerComponents)(
-    implicit ec: ExecutionContext
-) extends BaseController {
+class ActuatorController @Inject() (
+    healthService: HealthService,
+    infoService: InfoService,
+    cc: ControllerComponents
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def health: Action[AnyContent] = Action {
     respondHealth(group = None)
@@ -63,10 +66,17 @@ class ActuatorController @Inject() (healthService: HealthService, infoService: I
     val indicators = this.healthService.getIndicators(group)
     val status     = this.healthService.globalStatus(group)
     val body: JsObject =
-      if (indicators.nonEmpty) Json.obj("status" -> status, "indicators" -> toJson(indicators))
-      else Json.obj("status"                     -> status)
+      if (indicators.nonEmpty) {
+        Json.obj("status" -> status, "indicators" -> toJson(indicators))
+      } else {
+        Json.obj("status" -> status)
+      }
     // 503 on aggregated Down lets k8s probes treat the response as a hard failure.
-    if (status == Down) ServiceUnavailable(body) else Ok(body)
+    if (status == Down) {
+      ServiceUnavailable(body)
+    } else {
+      Ok(body)
+    }
   }
 
 }

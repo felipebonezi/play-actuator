@@ -26,7 +26,7 @@ import PlayCrossBuilding.isPlay30
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core, actuator, jdbc, slick, redis)
+  .aggregate(core, actuator, jdbc, slick, redis, metrics)
   .settings(
     name               := "play-actuator-root",
     crossScalaVersions := Nil,
@@ -136,6 +136,27 @@ lazy val redis = project
       )
     ),
     Dependencies.redis
+  )
+  .enablePlugins(Common)
+
+lazy val metrics = project
+  .in(file("play-actuator-indicators/metrics"))
+  .dependsOn(core)
+  .settings(
+    name                               := s"$metricsName$artifactSuffix",
+    organization                       := "io.github.felipebonezi",
+    scalaVersion                       := defaultScalaVersion,
+    crossScalaVersions                 := crossScala,
+    versionScheme                      := Some("early-semver"),
+    ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org",
+    ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local",
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/felipebonezi/$repoName/play-actuator-indicators/metrics"),
+        s"scm:git:git@github.com:felipebonezi/$repoName.git"
+      )
+    ),
+    Dependencies.metrics
   )
   .enablePlugins(Common)
 

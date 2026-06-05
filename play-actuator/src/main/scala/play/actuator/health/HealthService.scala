@@ -24,8 +24,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
-import scala.collection.mutable
-
 import play.actuator.ActuatorEnum.Down
 import play.actuator.ActuatorEnum.Status
 import play.actuator.ActuatorEnum.Up
@@ -50,35 +48,32 @@ class HealthService @Inject() (
 
   def getIndicators: Seq[Health] = getIndicators(None)
   def getIndicators(group: Option[String]): Seq[Health] = {
-    val filter: String => Boolean = group match {
-      case Some(name) => groupsConfig.get(name).map(g => (n: String) => g.matches(n)).getOrElse(_ => false)
-      case None       => _ => true
-    }
-
-    val indicators = mutable.Buffer[Health]()
-
-    if (isIndicatorActive("diskSpace") && filter("diskSpace")) {
-      val builder = new HealthBuilder("diskSpace")
-      this.diskSpaceIndicator.info(builder)
-      indicators.append(builder.build)
-    }
-
-    if (isIndicatorActive("database") && databaseIndicator != null && filter("database")) {
-      val builder = new HealthBuilder("database")
-      this.databaseIndicator.info(builder)
-      indicators.append(builder.build)
-    }
-
-    if (isIndicatorActive("redis") && redisIndicator != null && filter("redis")) {
-      val builder = new HealthBuilder("redis")
-      this.redisIndicator.info(builder)
-      indicators.append(builder.build)
-    }
-
-    indicators.toSeq
+    val filter = makeFilter(group)
+    val sources = Seq(
+      ("diskSpace", diskSpaceIndicator),
+      ("database", databaseIndicator),
+      ("redis", redisIndicator)
+    )
+    sources.iterator
+      .filter { case (name, ind) => ind != null && isIndicatorActive(name) && filter(name) }
+      .map { case (name, ind) =>
+        val builder = new HealthBuilder(name)
+        ind.info(builder)
+        builder.build
+      }
+      .toSeq
   }
 
   def knowsGroup(name: String): Boolean = groupsConfig.get(name).isDefined
+
+  private def makeFilter(group: Option[String]): String => Boolean = group match {
+    case Some(name) =>
+      groupsConfig.get(name) match {
+        case Some(g) => (n: String) => g.matches(n)
+        case None    => _ => false
+      }
+    case None => _ => true
+  }
 
   private def isIndicatorActive(name: String): Boolean =
     this.config

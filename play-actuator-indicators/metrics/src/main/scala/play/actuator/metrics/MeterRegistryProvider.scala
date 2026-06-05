@@ -18,43 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator.health
+package play.actuator.metrics
 
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 import scala.jdk.CollectionConverters._
 
-import com.typesafe.config.ConfigObject
+import io.micrometer.core.instrument.Tag
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import play.api.Configuration
 
 @Singleton
-class HealthGroupsConfig @Inject() (config: Configuration) {
-
-  // Parse `play.actuator.health.groups.<name>.{include,exclude}` into a Map.
-  // Defaults (liveness/readiness) ship via reference.conf so consumers get
-  // Kubernetes-ready probe endpoints with zero application.conf changes.
-  val groups: Map[String, HealthGroup] = {
-    val key = "play.actuator.health.groups"
-    if (!config.has(key)) Map.empty
-    else {
-      val obj = config.underlying.getObject(key)
-      obj
-        .entrySet()
-        .asScala
-        .iterator
-        .map { e =>
-          val name = e.getKey
-          val gc   = e.getValue.asInstanceOf[ConfigObject].toConfig
-          val include =
-            if (gc.hasPath("include")) gc.getStringList("include").asScala.toSet else Set.empty[String]
-          val exclude =
-            if (gc.hasPath("exclude")) gc.getStringList("exclude").asScala.toSet else Set.empty[String]
-          name -> HealthGroup(name, include, exclude)
-        }
-        .toMap
+class MeterRegistryProvider @Inject() (config: Configuration)
+    extends Provider[PrometheusMeterRegistry] {
+  override def get(): PrometheusMeterRegistry = {
+    val registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    val tags     = commonTags(config)
+    if (tags.nonEmpty) {
+      registry.config().commonTags(tags.asJava)
     }
+    registry
   }
 
-  def get(name: String): Option[HealthGroup] = groups.get(name)
+  private def commonTags(c: Configuration): Seq[Tag] = {
+    val key = "play.actuator.metrics.common-tags"
+    if (!c.has(key)) {
+      Seq.empty
+    } else {
+      c.underlying.getObject(key).entrySet().asScala.iterator.map { e =>
+        Tag.of(e.getKey, e.getValue.unwrapped().toString)
+      }.toSeq
+    }
+  }
 }
