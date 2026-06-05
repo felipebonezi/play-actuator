@@ -86,4 +86,10 @@ object Dependencies {
     playRedisGroup %% "play-redis" % playRedisVersion
   )
 
+  // Micrometer is a pure-JVM library — same artifact serves both Play axes.
+  val metrics = libraryDependencies ++= core ++ Seq(
+    "io.micrometer" % "micrometer-core"                % "1.15.0",
+    "io.micrometer" % "micrometer-registry-prometheus" % "1.15.0",
+  )
+
 }

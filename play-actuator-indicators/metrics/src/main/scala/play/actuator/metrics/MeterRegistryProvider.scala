@@ -18,18 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.metrics
 
 import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
 
-import play.api.routing.Router.Routes
-import play.api.routing.SimpleRouter
-import play.api.routing.sird._
+import scala.jdk.CollectionConverters._
 
-class ActuatorRouter @Inject() (controller: ActuatorController) extends SimpleRouter {
-  override def routes: Routes = {
-    case GET(p"/health")        => controller.health
-    case GET(p"/health/$group") => controller.healthGroup(group)
-    case GET(p"/info")          => controller.info
+import io.micrometer.core.instrument.Tag
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import play.api.Configuration
+
+@Singleton
+class MeterRegistryProvider @Inject() (config: Configuration)
+    extends Provider[PrometheusMeterRegistry] {
+  override def get(): PrometheusMeterRegistry = {
+    val registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    val tags     = commonTags(config)
+    if (tags.nonEmpty) {
+      registry.config().commonTags(tags.asJava)
+    }
+    registry
+  }
+
+  private def commonTags(c: Configuration): Seq[Tag] = {
+    val key = "play.actuator.metrics.common-tags"
+    if (!c.has(key)) {
+      Seq.empty
+    } else {
+      c.underlying.getObject(key).entrySet().asScala.iterator.map { e =>
+        Tag.of(e.getKey, e.getValue.unwrapped().toString)
+      }.toSeq
+    }
   }
 }

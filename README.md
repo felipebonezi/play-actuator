@@ -38,11 +38,21 @@ Run your project and check Actuators endpoints - e.g. `/actuator/health`.
 
 Below we have all project endpoints available on this project.
 
-| Endpoint ID | Description                                  | Path                | Ready to use? |
-|-------------|----------------------------------------------|---------------------|---------------|
-| health      | Displays your application’s health status.   | `/actuator/health`  | ✔️            |
-| info        | Displays information about your application. | `/actuator/info`    | ✔️            |
-| logfile     | Returns the contents of the log file.        | `/actuator/logfile` | ✖️            |
+| Endpoint ID         | Description                                            | Path                            | Ready to use? |
+|---------------------|--------------------------------------------------------|---------------------------------|---------------|
+| health              | Aggregated health (all active indicators).             | `/actuator/health`              | ✔️            |
+| health (liveness)   | Kubernetes liveness probe (default: `diskSpace` only). | `/actuator/health/liveness`     | ✔️            |
+| health (readiness)  | Kubernetes readiness probe (default: external deps).   | `/actuator/health/readiness`    | ✔️            |
+| health (group)      | Any user-defined group from `play.actuator.health.groups`. | `/actuator/health/<group>` | ✔️            |
+| info                | Displays information about your application.           | `/actuator/info`                | ✔️            |
+| metrics             | List/inspect Micrometer meters (opt-in module).        | `/actuator/metrics`             | ✔️            |
+| prometheus          | Prometheus exposition (opt-in module).                 | `/actuator/metrics/prometheus`  | ✔️            |
+| logfile             | Returns the contents of the log file.                  | `/actuator/logfile`             | ✖️            |
+
+Health endpoints return **HTTP 200** when the aggregated status is `UP`
+and **HTTP 503** when any included indicator is `DOWN` — so Kubernetes
+liveness and readiness probes work out of the box. Unknown group names
+return **HTTP 404**.
 
 ## Health endpoint details
 
@@ -94,6 +104,67 @@ Show to you information about your Redis connection.
   // Play 3.0
   libraryDependencies += "io.github.felipebonezi" %% "play-actuator-redis-indicator_play30" % "(version)"
 ```
+
+### Health groups (liveness / readiness)
+
+`play-actuator` ships with two opinionated default groups so Kubernetes
+probes work without any extra configuration:
+
+| Group        | Default indicators       | Suitable for       |
+|--------------|--------------------------|--------------------|
+| `liveness`   | `diskSpace` only         | `livenessProbe`    |
+| `readiness`  | everything except `diskSpace` | `readinessProbe` |
+
+Both can be overridden in `application.conf`. You can also define
+arbitrary custom groups (each becomes a new `/actuator/health/<name>`
+endpoint):
+
+```hocon
+play.actuator.health.groups {
+  liveness  { include = ["diskSpace"] }
+  readiness { exclude = ["diskSpace"] }
+
+  # any user-defined group
+  storage   { include = ["database"]  }
+}
+```
+
+`include` is a whitelist (empty means "all indicators"). `exclude`
+always subtracts from the include set.
+
+## Metrics endpoint details
+
+Add the optional metrics module to expose Micrometer-based JVM metrics
+and a Prometheus scrape endpoint.
+
+```sbt
+  // Play 2.9
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-metrics" % "(version)"
+  // Play 3.0
+  libraryDependencies += "io.github.felipebonezi" %% "play-actuator-metrics_play30" % "(version)"
+```
+
+Then mount the metrics sub-router in `conf/routes` alongside the main
+actuator router:
+
+```
+->   /actuator           play.actuator.ActuatorRouter
+->   /actuator/metrics   play.actuator.metrics.MetricsRouter
+```
+
+This exposes:
+
+| Method + path                   | Returns                                      |
+|---------------------------------|----------------------------------------------|
+| `GET /actuator/metrics`         | JSON list of meter names                     |
+| `GET /actuator/metrics/<name>`  | JSON detail (measurements + available tags)  |
+| `GET /actuator/metrics/prometheus` | `text/plain` Prometheus exposition format |
+
+JVM and system meter binders (memory, GC, threads, classloader,
+processor, uptime, file descriptors) are registered eagerly at startup
+and can be turned off individually under
+`play.actuator.metrics.bindings.*`. Apply common tags to every meter
+(e.g. application/env) via `play.actuator.metrics.common-tags { … }`.
 
 ## Info endpoint details
 

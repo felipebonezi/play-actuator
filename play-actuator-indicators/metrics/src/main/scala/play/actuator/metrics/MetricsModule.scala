@@ -18,18 +18,20 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.metrics
 
-import javax.inject.Inject
+import com.google.inject.AbstractModule
+import com.google.inject.Scopes
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
-import play.api.routing.Router.Routes
-import play.api.routing.SimpleRouter
-import play.api.routing.sird._
-
-class ActuatorRouter @Inject() (controller: ActuatorController) extends SimpleRouter {
-  override def routes: Routes = {
-    case GET(p"/health")        => controller.health
-    case GET(p"/health/$group") => controller.healthGroup(group)
-    case GET(p"/info")          => controller.info
+class MetricsModule extends AbstractModule {
+  override def configure(): Unit = {
+    bind(classOf[PrometheusMeterRegistry])
+      .toProvider(classOf[MeterRegistryProvider])
+      .in(Scopes.SINGLETON)
+    bind(classOf[MeterRegistry]).to(classOf[PrometheusMeterRegistry])
+    // Eager so JVM binders register at boot, not on first /metrics scrape.
+    bind(classOf[MeterBindersInitializer]).asEagerSingleton()
   }
 }

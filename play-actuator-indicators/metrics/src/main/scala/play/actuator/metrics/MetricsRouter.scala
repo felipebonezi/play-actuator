@@ -18,7 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.metrics
 
 import javax.inject.Inject
 
@@ -26,10 +26,10 @@ import play.api.routing.Router.Routes
 import play.api.routing.SimpleRouter
 import play.api.routing.sird._
 
-class ActuatorRouter @Inject() (controller: ActuatorController) extends SimpleRouter {
+class MetricsRouter @Inject() (controller: MetricsController) extends SimpleRouter {
   override def routes: Routes = {
-    case GET(p"/health")        => controller.health
-    case GET(p"/health/$group") => controller.healthGroup(group)
-    case GET(p"/info")          => controller.info
+    case GET(p"/")           => controller.list
+    case GET(p"/prometheus") => controller.prometheus
+    case GET(p"/$name")      => controller.detail(name)
   }
 }
