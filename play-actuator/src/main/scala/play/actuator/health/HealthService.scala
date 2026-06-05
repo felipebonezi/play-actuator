@@ -19,22 +19,23 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package play.actuator.health
-import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
-import play.actuator.ActuatorEnum.Down
-import play.actuator.health.indicator.DiskSpaceIndicator
-import play.actuator.health.indicator.HealthIndicator
-import play.api.Configuration
-
 import javax.annotation.Nullable
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
+
 import scala.collection.mutable
+
+import play.actuator.ActuatorEnum.Down
+import play.actuator.ActuatorEnum.Status
+import play.actuator.ActuatorEnum.Up
+import play.actuator.health.indicator.HealthIndicator
+import play.api.Configuration
 
 @Singleton
 class HealthService @Inject() (
     config: Configuration,
+    groupsConfig: HealthGroupsConfig,
     @Nullable @Named("diskSpaceIndicator")
     diskSpaceIndicator: HealthIndicator,
     @Nullable @Named("databaseIndicator")
@@ -43,28 +44,32 @@ class HealthService @Inject() (
     redisIndicator: HealthIndicator
 ) {
 
-  def globalStatus: Status =
-    if (getIndicators.exists(h => h.status == Down)) {
-      Down
-    } else {
-      Up
+  def globalStatus: Status = globalStatus(None)
+  def globalStatus(group: Option[String]): Status =
+    if (getIndicators(group).exists(_.status == Down)) Down else Up
+
+  def getIndicators: Seq[Health] = getIndicators(None)
+  def getIndicators(group: Option[String]): Seq[Health] = {
+    val filter: String => Boolean = group match {
+      case Some(name) => groupsConfig.get(name).map(g => (n: String) => g.matches(n)).getOrElse(_ => false)
+      case None       => _ => true
     }
 
-  def getIndicators: Seq[Health] = {
     val indicators = mutable.Buffer[Health]()
-    if (isIndicatorActive("diskSpace")) {
+
+    if (isIndicatorActive("diskSpace") && filter("diskSpace")) {
       val builder = new HealthBuilder("diskSpace")
       this.diskSpaceIndicator.info(builder)
       indicators.append(builder.build)
     }
 
-    if (isIndicatorActive("database") && databaseIndicator != null) {
+    if (isIndicatorActive("database") && databaseIndicator != null && filter("database")) {
       val builder = new HealthBuilder("database")
       this.databaseIndicator.info(builder)
       indicators.append(builder.build)
     }
 
-    if (isIndicatorActive("redis") && redisIndicator != null) {
+    if (isIndicatorActive("redis") && redisIndicator != null && filter("redis")) {
       val builder = new HealthBuilder("redis")
       this.redisIndicator.info(builder)
       indicators.append(builder.build)
@@ -72,6 +77,8 @@ class HealthService @Inject() (
 
     indicators.toSeq
   }
+
+  def knowsGroup(name: String): Boolean = groupsConfig.get(name).isDefined
 
   private def isIndicatorActive(name: String): Boolean =
     this.config

@@ -18,18 +18,17 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package play.actuator
+package play.actuator.health
 
-import javax.inject.Inject
-
-import play.api.routing.Router.Routes
-import play.api.routing.SimpleRouter
-import play.api.routing.sird._
-
-class ActuatorRouter @Inject() (controller: ActuatorController) extends SimpleRouter {
-  override def routes: Routes = {
-    case GET(p"/health")        => controller.health
-    case GET(p"/health/$group") => controller.healthGroup(group)
-    case GET(p"/info")          => controller.info
+// `include` empty means "all indicators". `exclude` always subtracts.
+final case class HealthGroup(
+    name: String,
+    include: Set[String] = Set.empty,
+    exclude: Set[String] = Set.empty
+) {
+  def matches(indicatorName: String): Boolean = {
+    val included = include.isEmpty || include.contains(indicatorName)
+    val excluded = exclude.contains(indicatorName)
+    included && !excluded
   }
 }

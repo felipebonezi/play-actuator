@@ -20,36 +20,36 @@
  */
 package play.actuator
 
+import javax.inject.Inject
+
+import scala.concurrent.ExecutionContext
+
+import play.actuator.ActuatorEnum.Down
+import play.actuator.health.HealthService
+import play.actuator.info.InfoService
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.BaseController
 import play.api.mvc.ControllerComponents
-import play.actuator.ActuatorEnum.Down
-import play.actuator.ActuatorEnum.Status
-import play.actuator.ActuatorEnum.Up
-import play.actuator.health.HealthService
-import play.actuator.info.InfoService
-import play.api.libs.json.Json.toJson
-
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class ActuatorController @Inject() (healthService: HealthService, infoService: InfoService, cc: ControllerComponents)(
     implicit ec: ExecutionContext
 ) extends BaseController {
 
   def health: Action[AnyContent] = Action {
-    val indicators = this.healthService.getIndicators
-    if (indicators.nonEmpty) {
-      val status = if (indicators.exists(indicator => indicator.status == Down)) {
-        Down
-      } else {
-        Up
-      }
-      Ok(Json.obj("status" -> status, "indicators" -> toJson(indicators)))
+    respondHealth(group = None)
+  }
+
+  // GET /health/:group — Spring-compatible `liveness`/`readiness` (or any user-defined group).
+  // Unknown group → 404 so k8s probes fail loudly on misconfiguration.
+  def healthGroup(group: String): Action[AnyContent] = Action {
+    if (this.healthService.knowsGroup(group)) {
+      respondHealth(group = Some(group))
     } else {
-      Ok(Json.obj("status" -> this.healthService.globalStatus))
+      NotFound(Json.obj("error" -> s"unknown health group: $group"))
     }
   }
 
@@ -58,5 +58,15 @@ class ActuatorController @Inject() (healthService: HealthService, infoService: I
   }
 
   protected override def controllerComponents: ControllerComponents = this.cc
+
+  private def respondHealth(group: Option[String]) = {
+    val indicators = this.healthService.getIndicators(group)
+    val status     = this.healthService.globalStatus(group)
+    val body: JsObject =
+      if (indicators.nonEmpty) Json.obj("status" -> status, "indicators" -> toJson(indicators))
+      else Json.obj("status"                     -> status)
+    // 503 on aggregated Down lets k8s probes treat the response as a hard failure.
+    if (status == Down) ServiceUnavailable(body) else Ok(body)
+  }
 
 }
