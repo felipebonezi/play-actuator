@@ -32,8 +32,7 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import play.api.Configuration
 
 @Singleton
-class MeterRegistryProvider @Inject() (config: Configuration)
-    extends Provider[PrometheusMeterRegistry] {
+class MeterRegistryProvider @Inject() (config: Configuration) extends Provider[PrometheusMeterRegistry] {
   override def get(): PrometheusMeterRegistry = {
     val registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     val tags     = commonTags(config)
@@ -48,9 +47,15 @@ class MeterRegistryProvider @Inject() (config: Configuration)
     if (!c.has(key)) {
       Seq.empty
     } else {
-      c.underlying.getObject(key).entrySet().asScala.iterator.map { e =>
-        Tag.of(e.getKey, e.getValue.unwrapped().toString)
-      }.toSeq
+      c.underlying
+        .getObject(key)
+        .entrySet()
+        .asScala
+        .iterator
+        .map { e =>
+          Tag.of(e.getKey, e.getValue.unwrapped().toString)
+        }
+        .toSeq
     }
   }
 }

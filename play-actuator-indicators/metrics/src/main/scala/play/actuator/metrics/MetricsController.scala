@@ -81,9 +81,9 @@ class MetricsController @Inject() (
       .toSeq
     val baseUnit = Option(meters.head.getId.getBaseUnit).map(JsString.apply)
     val base = Json.obj(
-      "name"            -> name,
-      "measurements"    -> measurements,
-      "availableTags"   -> tags
+      "name"          -> name,
+      "measurements"  -> measurements,
+      "availableTags" -> tags
     )
     baseUnit.fold(base)(u => base + ("baseUnit" -> u))
   }
