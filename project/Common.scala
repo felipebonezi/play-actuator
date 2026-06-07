@@ -60,8 +60,8 @@ object Common extends AutoPlugin {
       developers += Developer(
         "contributors",
         "Contributors",
-        s"https://github.com/felipebonezi/$repoName/graphs/contributors",
-        url("https://github.com/felipebonezi")
+        "",
+        url(s"https://github.com/felipebonezi/$repoName/graphs/contributors")
       ),
     )
 
