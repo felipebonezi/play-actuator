@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload ScalaStyle Report (XML)
         if: matrix.play == '2.9'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scalastyle-reports
           path: ${{github.workspace}}/target/scalastyle-report/
